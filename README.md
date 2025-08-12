@@ -1,8 +1,19 @@
 # Sistema-de-Matricula
 
-## Instruções
+Projeto do Laboratório de Desenvolvimento de Software.
+Criar um sistema de gerenciamento de matrículas.
 
-... (fazer)
+## Participantes
+
+- Rafael Moura
+
+- Athos Marques
+
+- Mateus Araujo
+
+## Orientador
+
+- João Pedro Oliveira Batisteli
 
 ## Descrição Histórias de Usuário
 
