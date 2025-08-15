@@ -23,3 +23,4 @@ Criar um sistema de gerenciamento de matrículas.
 6. Eu como secretária quero cadastrar/remover um curso.
 7. Eu como secretária quero cadastrar/alterar/remover disciplinas de um curso.
 8. Eu como aluno quero ter acesso aos meus boletos.
+9. Eu como secretária quero definir as datas de início e fim do período de matrículas no sistema.
