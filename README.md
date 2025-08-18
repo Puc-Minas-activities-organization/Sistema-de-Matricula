@@ -25,4 +25,3 @@ Criar um sistema de gerenciamento de matrículas.
 8. Eu como **secretária** quero gerenciar informações sobre alunos e professores.
 9. Eu como **secretária** quero cadastrar/alterar/remover um curso e as disciplinas de um curso.
 10. Eu como **secretária** quero definir as datas de início e fim do período de matrículas no sistema.
-11. Eu como **sistema de cobrança** quero ser notificado após a matrícula para efetuar a cobrança.
