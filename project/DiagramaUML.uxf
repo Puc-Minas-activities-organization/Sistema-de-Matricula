@@ -1,0 +1,56 @@
+<diagram program="umletino" version="15.1"><zoom_level>9</zoom_level><element><id>UMLClass</id><coordinates><x>756</x><y>270</y><w>189</w><h>153</h></coordinates><panel_attributes>Disciplina
+--
+_+MAX_ALUNOS = 60_
+_+MIN_ALUNOS = 3_
+-cargaHoraria: int
+-nome: String
+-obrigatoria: boolean
+-alunos: List&lt;Alunos&gt;
+-status: Status
+--
++verificarStatus():boolean
++obterInformacoes(): String
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>225</x><y>0</y><w>189</w><h>90</h></coordinates><panel_attributes>&lt;&lt;abstract&gt;&gt;
+Usuario
+--
+-email: String 
+-senha: String
+--
++login() : void
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>432</x><y>126</y><w>234</w><h>108</h></coordinates><panel_attributes>Matricula
+--
+-disciplina: Disciplina
+-aluno: Aluno
+-dataMatricula: LocalDate
+--
++efetivarMatricula()
++efetivarCancelamento()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>549</x><y>9</y><w>306</w><h>63</h></coordinates><panel_attributes>Professor
+--
+-disciplinas: List&lt;Disciplinas&gt;
+--
++consultarAlunos()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>225</x><y>297</y><w>189</w><h>90</h></coordinates><panel_attributes>Aluno
+--
+-matriculas: List&lt;Matricula&gt;
+-curso: Curso
+--
++matricular()
++cancelarMatricula()
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>378</y><w>189</w><h>144</h></coordinates><panel_attributes>Secretaria
+--
+--
++gerarCurriculo():String
++cadastrarDisciplina()
++removerDisciplina()
++cadastrarAluno()
++removerAluno()
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>405</x><y>315</y><w>369</w><h>36</h></coordinates><panel_attributes>lt=-
+m1=1...n
+m2=0...n</panel_attributes><additional_attributes>10;10;390;10</additional_attributes></element><element><id>Relation</id><coordinates><x>405</x><y>18</y><w>162</w><h>27</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;160;10</additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>63</y><w>153</w><h>333</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>150;10;10;10;10;350</additional_attributes></element><element><id>Relation</id><coordinates><x>315</x><y>81</y><w>27</w><h>234</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;240</additional_attributes></element><element><id>Relation</id><coordinates><x>783</x><y>63</y><w>27</w><h>225</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;230;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>522</x><y>225</y><w>54</w><h>117</h></coordinates><panel_attributes>lt=..</panel_attributes><additional_attributes>40;10;10;110</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1026</x><y>315</y><w>189</w><h>63</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
+Status
+--
+ATIVA
+CANCELADA
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>936</x><y>342</y><w>108</w><h>27</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>100;10;10;10</additional_attributes></element></diagram>
