@@ -14,4 +14,6 @@ public class Matricula {
     public void efetivarCancelamento(){
         
     }
+
+    public void notificarCobranca(){}
 }
