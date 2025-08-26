@@ -2,15 +2,8 @@ package com.sm;
 
 public class Secretaria extends Usuario {
 
-    public String gerarCurrico() {
-        return "";
+    public Secretaria(String email, String senha){
+        super(email, senha);
     }
-
-    public void cadastrarDisciplina(){ }
-
-    public void removerDisciplina(){ }
-
-    public void cadastrarAluno(){}
-
-    public void removerAluno(){}
+    
 }

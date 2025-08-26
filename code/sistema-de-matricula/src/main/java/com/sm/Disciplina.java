@@ -10,14 +10,52 @@ public class Disciplina {
     private boolean obrigatoria;
     private List<Aluno> alunos;
     private Status status;
-    
 
-    public String obterInformacoes(){
-        return "";
+    public Disciplina(double cargaHoraria, String nome, boolean obrigatoria, List<Aluno> alunos, Status status) {
+        this.cargaHoraria = cargaHoraria;
+        this.nome = nome;
+        this.obrigatoria = obrigatoria;
+        this.alunos = alunos;
+        this.status = status;
     }
-
-    public Status verificarStatus(){
+    
+    public static int getMaxAlunos() {
+        return MAX_ALUNOS;
+    }
+    public static int getMinAlunos() {
+        return MIN_ALUNOS;
+    }
+    public double getCargaHoraria() {
+        return cargaHoraria;
+    }
+    public void setCargaHoraria(double cargaHoraria) {
+        this.cargaHoraria = cargaHoraria;
+    }
+    public String getNome() {
+        return nome;
+    }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+    public boolean isObrigatoria() {
+        return obrigatoria;
+    }
+    public void setObrigatoria(boolean obrigatoria) {
+        this.obrigatoria = obrigatoria;
+    }
+    public List<Aluno> getAlunos() {
+        return alunos;
+    }
+    public void setAlunos(List<Aluno> alunos) {
+        this.alunos = alunos;
+    }
+    public Status getStatus() {
         return status;
     }
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+    
+    
 
 }
