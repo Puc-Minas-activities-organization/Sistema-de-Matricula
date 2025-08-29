@@ -1,4 +1,4 @@
-<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>840</x><y>300</y><w>210</w><h>190</h></coordinates><panel_attributes>Disciplina
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>840</x><y>300</y><w>210</w><h>170</h></coordinates><panel_attributes>Disciplina
 --
 _+MAX_ALUNOS = 60_
 _+MIN_ALUNOS = 3_
@@ -9,7 +9,6 @@ _+MIN_ALUNOS = 3_
 -status: Status
 -professor: Professor
 --
-+verificarStatus(): Status
 +obterInformacoes(): String
 </panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>250</x><y>0</y><w>210</w><h>100</h></coordinates><panel_attributes>&lt;&lt;abstract&gt;&gt;
 Usuario
