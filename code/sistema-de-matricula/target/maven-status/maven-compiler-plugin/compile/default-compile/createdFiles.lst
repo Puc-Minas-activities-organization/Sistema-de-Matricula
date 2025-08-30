@@ -1,0 +1,14 @@
+com\sm\SistemaAutenticacao.class
+com\sm\Status.class
+com\sm\interfaces\InterfaceAluno.class
+com\sm\Usuario.class
+com\sm\Secretaria.class
+com\sm\interfaces\InterfaceSecretaria.class
+com\sm\interfaces\InterfaceProfessor.class
+com\sm\Curso.class
+com\sm\Matricula.class
+com\sm\Disciplina.class
+com\sm\Professor.class
+com\sm\Main.class
+com\sm\Aluno.class
+com\sm\SistemaArquivos.class
