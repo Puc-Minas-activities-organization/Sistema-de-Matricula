@@ -100,7 +100,16 @@ public class Aluno extends Usuario{
                 SistemaArquivos.salvarMatricula(matricula);
                 this.matriculas.add(matricula);
                 disciplina.getAlunos().add(this);
-                
+
+                // Atualiza persistência da disciplina com nova contagem de alunos
+                List<Disciplina> todasDisciplinas = SistemaArquivos.carregarDisciplinas();
+                for (Disciplina d : todasDisciplinas) {
+                  if (d.getNome().equalsIgnoreCase(disciplina.getNome())) {
+                     d.setAlunos(disciplina.getAlunos());
+                  }
+                }
+                SistemaArquivos.reescreverDisciplinas(todasDisciplinas);
+
                 System.out.println("Matrícula realizada com sucesso!");
                 return true;
             }

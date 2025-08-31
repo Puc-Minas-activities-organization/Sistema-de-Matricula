@@ -167,19 +167,26 @@ public class Secretaria extends Usuario {
     // Método para listar todas as disciplinas
     public void listarTodasDisciplinas() {
         List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
+        List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
         System.out.println("\n=== TODAS AS DISCIPLINAS ===");
-        
+
         if (disciplinas.isEmpty()) {
             System.out.println("Nenhuma disciplina cadastrada.");
             return;
         }
-        
+
         for (Disciplina disciplina : disciplinas) {
+            int alunosCount = 0;
+            for (Matricula matricula : matriculas) {
+                if (matricula.getDisciplina().getNome().equalsIgnoreCase(disciplina.getNome())) {
+                    alunosCount++;
+                }
+            }
             System.out.println("Nome: " + disciplina.getNome());
             System.out.println("Carga Horária: " + disciplina.getCargaHoraria());
             System.out.println("Tipo: " + (disciplina.isObrigatoria() ? "Obrigatória" : "Optativa"));
             System.out.println("Status: " + disciplina.getStatus());
-            System.out.println("Alunos: " + disciplina.getAlunos().size());
+            System.out.println("Alunos: " + alunosCount);
             System.out.println("------------------------");
         }
     }

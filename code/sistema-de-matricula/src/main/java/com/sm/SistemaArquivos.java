@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SistemaArquivos {
-    private static final String ARQUIVO_USUARIOS = "usuarios.txt";
-    private static final String ARQUIVO_DISCIPLINAS = "disciplinas.txt";
-    private static final String ARQUIVO_MATRICULAS = "matriculas.txt";
+    private static final String ARQUIVO_USUARIOS = "code/sistema-de-matricula/src/main/java/com/sm/resources/usuarios.txt";
+    private static final String ARQUIVO_DISCIPLINAS = "code/sistema-de-matricula/src/main/java/com/sm/resources/disciplinas.txt";
+    private static final String ARQUIVO_MATRICULAS = "code/sistema-de-matricula/src/main/java/com/sm/resources/matriculas.txt";
 
     // Método para salvar qualquer tipo de usuário
     public static void salvarUsuario(Usuario usuario) {

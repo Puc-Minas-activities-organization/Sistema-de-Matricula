@@ -1,0 +1,4 @@
+
+email@gmail.com;Banco de Dados;2025-08-30
+email@gmail.com;Estruturas de Dados;2025-08-30
+email@gmail.com;Desenvolvimento Web;2025-08-30

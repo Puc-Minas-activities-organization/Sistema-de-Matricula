@@ -1,5 +1,5 @@
 Programação Orientada a Objetos;60.0;true;ATIVA;0
 Estruturas de Dados;60.0;true;ATIVA;0
 Banco de Dados;60.0;true;ATIVA;0
-Desenvolvimento Web;45.0;false;ATIVA;0
+Desenvolvimento Web;45.0;false;ATIVA;1
 Inteligência Artificial;45.0;false;ATIVA;0
