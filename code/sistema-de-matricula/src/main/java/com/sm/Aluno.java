@@ -139,6 +139,11 @@ public class Aluno extends Usuario {
         System.out.println("Tipo: " + (disciplina.isObrigatoria() ? "Obrigatória" : "Optativa"));
         System.out.println(
             "Vagas disponíveis: " + (Disciplina.MAX_ALUNOS - disciplina.getAlunos().size()));
+        if (disciplina.getProfessor() != null) {
+          System.out.println("Professor: " + disciplina.getProfessor().getEmail());
+        } else {
+          System.out.println("Professor: (não vinculado)");
+        }
         System.out.println("------------------------");
       }
     }
@@ -146,26 +151,26 @@ public class Aluno extends Usuario {
 
   // Método para visualizar suas matrículas
   public void visualizarMatriculas() {
-      List<Matricula> todasMatriculas = SistemaArquivos.carregarMatriculas();
-      System.out.println("\n=== SUAS MATRÍCULAS ===");
+    List<Matricula> todasMatriculas = SistemaArquivos.carregarMatriculas();
+    System.out.println("\n=== SUAS MATRÍCULAS ===");
 
-      boolean temMatricula = false;
-      for (Matricula matricula : todasMatriculas) {
-          if (matricula.getAluno().getEmail().equalsIgnoreCase(this.getEmail())) {
-              System.out.println("Disciplina: " + matricula.getDisciplina().getNome());
-              System.out.println("Data da Matrícula: " + matricula.getDataMatricula());
-              System.out.println(
-                      "Tipo: " + (matricula.getDisciplina().isObrigatoria() ? "Obrigatória" : "Optativa"));
-              System.out.println("------------------------");
-              temMatricula = true;
-          }
+    boolean temMatricula = false;
+    for (Matricula matricula : todasMatriculas) {
+      if (matricula.getAluno().getEmail().equalsIgnoreCase(this.getEmail())) {
+        System.out.println("Disciplina: " + matricula.getDisciplina().getNome());
+        System.out.println("Data da Matrícula: " + matricula.getDataMatricula());
+        System.out.println(
+            "Tipo: " + (matricula.getDisciplina().isObrigatoria() ? "Obrigatória" : "Optativa"));
+        System.out.println("------------------------");
+        temMatricula = true;
       }
+    }
 
-      if (!temMatricula) {
-          System.out.println("Você não possui matrículas ativas.");
-      }
+    if (!temMatricula) {
+      System.out.println("Você não possui matrículas ativas.");
+    }
   }
-  
+
   // Método para cancelar matrícula em uma disciplina
   public boolean cancelarMatricula(String nomeDisciplina) {
     if (!Secretaria.isPeriodoMatriculaAtivo()) {

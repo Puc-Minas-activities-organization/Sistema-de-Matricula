@@ -63,6 +63,8 @@ public class SistemaArquivos {
 
   public static void salvarDisciplina(Disciplina disciplina) {
     try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_DISCIPLINAS, true))) {
+      String emailProfessor =
+          disciplina.getProfessor() != null ? disciplina.getProfessor().getEmail() : "";
       writer.println(
           disciplina.getNome()
               + ";"
@@ -72,7 +74,9 @@ public class SistemaArquivos {
               + ";"
               + disciplina.getStatus()
               + ";"
-              + (disciplina.getAlunos() != null ? disciplina.getAlunos().size() : 0));
+              + (disciplina.getAlunos() != null ? disciplina.getAlunos().size() : 0)
+              + ";"
+              + emailProfessor);
     } catch (IOException e) {
       System.err.println("Erro ao salvar disciplina: " + e.getMessage());
     }
@@ -176,10 +180,19 @@ public class SistemaArquivos {
           double cargaHoraria = Double.parseDouble(dados[1]);
           boolean obrigatoria = Boolean.parseBoolean(dados[2]);
           Status status = Status.valueOf(dados[3]);
-          // int numAlunos = Integer.parseInt(dados[4]); // Removido pois não é usado
-
           List<Aluno> alunos = new ArrayList<>();
           Disciplina disciplina = new Disciplina(cargaHoraria, nome, obrigatoria, alunos, status);
+          // Se existir campo de professor, associar
+          if (dados.length >= 6 && !dados[5].isEmpty()) {
+            String emailProfessor = dados[5];
+            List<Professor> professores = carregarProfessores();
+            for (Professor prof : professores) {
+              if (prof.getEmail().equalsIgnoreCase(emailProfessor)) {
+                disciplina.setProfessor(prof);
+                break;
+              }
+            }
+          }
           disciplinas.add(disciplina);
         }
       }
@@ -248,6 +261,8 @@ public class SistemaArquivos {
   public static void reescreverDisciplinas(List<Disciplina> disciplinas) {
     try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_DISCIPLINAS))) {
       for (Disciplina disciplina : disciplinas) {
+        String emailProfessor =
+            disciplina.getProfessor() != null ? disciplina.getProfessor().getEmail() : "";
         writer.println(
             disciplina.getNome()
                 + ";"
@@ -257,7 +272,9 @@ public class SistemaArquivos {
                 + ";"
                 + disciplina.getStatus()
                 + ";"
-                + (disciplina.getAlunos() != null ? disciplina.getAlunos().size() : 0));
+                + (disciplina.getAlunos() != null ? disciplina.getAlunos().size() : 0)
+                + ";"
+                + emailProfessor);
       }
     } catch (IOException e) {
       System.err.println("Erro ao reescrever disciplinas: " + e.getMessage());

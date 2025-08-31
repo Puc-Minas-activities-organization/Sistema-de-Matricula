@@ -92,11 +92,6 @@ public class Secretaria extends Usuario {
 
   // Método para cadastrar nova disciplina
   public boolean cadastrarDisciplina(String nome, double cargaHoraria, boolean obrigatoria) {
-    if (cargaHoraria <= 0) {
-      System.out.println("Erro: Carga horária deve ser maior que zero.");
-      return false;
-    }
-    
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
 
     // Verificar se a disciplina já existe
@@ -241,6 +236,11 @@ public class Secretaria extends Usuario {
       System.out.println("Tipo: " + (disciplina.isObrigatoria() ? "Obrigatória" : "Optativa"));
       System.out.println("Status: " + disciplina.getStatus());
       System.out.println("Alunos: " + alunosCount);
+      if (disciplina.getProfessor() != null) {
+        System.out.println("Professor: " + disciplina.getProfessor().getEmail());
+      } else {
+        System.out.println("Professor: (não vinculado)");
+      }
       System.out.println("------------------------");
     }
   }
@@ -293,5 +293,57 @@ public class Secretaria extends Usuario {
       System.out.println("Data: " + matricula.getDataMatricula());
       System.out.println("------------------------");
     }
+  }
+
+  // Método para vincular um professor a uma disciplina
+  public boolean vincularProfessorADisciplina(String nomeDisciplina, String emailProfessor) {
+    List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
+    List<Professor> professores = SistemaArquivos.carregarProfessores();
+    Disciplina disciplina = null;
+    for (Disciplina d : disciplinas) {
+      if (d.getNome().equalsIgnoreCase(nomeDisciplina)) {
+        disciplina = d;
+        break;
+      }
+    }
+    if (disciplina == null) {
+      System.out.println("Disciplina não encontrada.");
+      return false;
+    }
+    Professor professor = null;
+    for (Professor p : professores) {
+      if (p.getEmail().equalsIgnoreCase(emailProfessor)) {
+        professor = p;
+        break;
+      }
+    }
+    if (professor == null) {
+      System.out.println("Professor não encontrado.");
+      return false;
+    }
+    disciplina.setProfessor(professor);
+    SistemaArquivos.reescreverDisciplinas(disciplinas);
+    System.out.println("Professor vinculado à disciplina com sucesso!");
+    return true;
+  }
+
+  // Método para desvincular professor de uma disciplina
+  public boolean desvincularProfessorDeDisciplina(String nomeDisciplina) {
+    List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
+    Disciplina disciplina = null;
+    for (Disciplina d : disciplinas) {
+      if (d.getNome().equalsIgnoreCase(nomeDisciplina)) {
+        disciplina = d;
+        break;
+      }
+    }
+    if (disciplina == null) {
+      System.out.println("Disciplina não encontrada.");
+      return false;
+    }
+    disciplina.setProfessor(null);
+    SistemaArquivos.reescreverDisciplinas(disciplinas);
+    System.out.println("Professor desvinculado da disciplina com sucesso!");
+    return true;
   }
 }

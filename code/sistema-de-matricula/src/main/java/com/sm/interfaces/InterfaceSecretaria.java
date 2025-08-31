@@ -27,6 +27,8 @@ public class InterfaceSecretaria {
       System.out.println("7. Gerar relatório de matrículas");
       System.out.println("8. Iniciar período de matrícula");
       System.out.println("9. Finalizar período de matrícula");
+      System.out.println("10. Vincular professor a disciplina");
+      System.out.println("11. Desvincular professor de disciplina");
       System.out.println("0. Sair");
       System.out.print("Escolha uma opção: ");
 
@@ -60,6 +62,12 @@ public class InterfaceSecretaria {
           break;
         case 9:
           secretaria.finalizarPeriodoMatricula();
+          break;
+        case 10:
+          vincularProfessorADisciplina();
+          break;
+        case 11:
+          desvincularProfessorDeDisciplina();
           break;
         case 0:
           System.out.println("Saindo...");
@@ -114,5 +122,19 @@ public class InterfaceSecretaria {
     System.out.print("Digite o nome da disciplina a ser cancelada: ");
     String nome = scanner.nextLine();
     secretaria.cancelarDisciplina(nome);
+  }
+
+  private void vincularProfessorADisciplina() {
+    System.out.print("Digite o nome da disciplina: ");
+    String nomeDisciplina = scanner.nextLine();
+    System.out.print("Digite o email do professor: ");
+    String emailProfessor = scanner.nextLine();
+    secretaria.vincularProfessorADisciplina(nomeDisciplina, emailProfessor);
+  }
+
+  private void desvincularProfessorDeDisciplina() {
+    System.out.print("Digite o nome da disciplina: ");
+    String nomeDisciplina = scanner.nextLine();
+    secretaria.desvincularProfessorDeDisciplina(nomeDisciplina);
   }
 }
