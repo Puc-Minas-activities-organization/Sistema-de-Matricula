@@ -29,6 +29,9 @@ public class Disciplina {
         return cargaHoraria;
     }
     public void setCargaHoraria(double cargaHoraria) {
+        if (cargaHoraria <= 0) {
+            throw new IllegalArgumentException("Carga horária deve ser maior que zero.");
+        }
         this.cargaHoraria = cargaHoraria;
     }
     public String getNome() {

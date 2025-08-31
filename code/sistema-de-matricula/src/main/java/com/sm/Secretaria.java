@@ -92,6 +92,11 @@ public class Secretaria extends Usuario {
 
   // Método para cadastrar nova disciplina
   public boolean cadastrarDisciplina(String nome, double cargaHoraria, boolean obrigatoria) {
+    if (cargaHoraria <= 0) {
+      System.out.println("Erro: Carga horária deve ser maior que zero.");
+      return false;
+    }
+    
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
 
     // Verificar se a disciplina já existe

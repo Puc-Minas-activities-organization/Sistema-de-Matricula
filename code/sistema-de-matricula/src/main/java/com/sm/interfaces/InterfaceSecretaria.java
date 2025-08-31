@@ -87,7 +87,11 @@ public class InterfaceSecretaria {
     boolean obrigatoria = scanner.nextBoolean();
     scanner.nextLine(); // Consumir quebra de linha
 
-    secretaria.cadastrarDisciplina(nome, cargaHoraria, obrigatoria);
+    try {
+      secretaria.cadastrarDisciplina(nome, cargaHoraria, obrigatoria);
+    } catch (IllegalArgumentException e) {
+      System.out.println("Erro: " + e.getMessage());
+    }
   }
 
   private void removerDisciplina() {
