@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SistemaArquivos {
-  // Método para reescrever todas as matrículas (usado para cancelamento)
+//reescreve todas as matrículas
   public static void reescreverMatriculas(List<Matricula> matriculas) {
     try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_MATRICULAS))) {
       for (Matricula m : matriculas) {
@@ -29,7 +29,7 @@ public class SistemaArquivos {
   private static final String ARQUIVO_MATRICULAS =
       "code/sistema-de-matricula/src/main/java/com/sm/resources/matriculas.txt";
 
-  // Método para salvar qualquer tipo de usuário
+  // salva qualquer usuário no arquivo
   public static void salvarUsuario(Usuario usuario) {
     String tipoUsuario = "";
     String dadosExtra = "";
@@ -95,7 +95,6 @@ public class SistemaArquivos {
     }
   }
 
-  // Método para carregar todos os usuários e filtrar por tipo
   public static List<Aluno> carregarAlunos() {
     List<Aluno> alunos = new ArrayList<>();
     try (BufferedReader reader = new BufferedReader(new FileReader(ARQUIVO_USUARIOS))) {
@@ -114,7 +113,6 @@ public class SistemaArquivos {
         }
       }
     } catch (IOException e) {
-      // Arquivo não existe ainda, retorna lista vazia
     }
     return alunos;
   }
@@ -145,7 +143,6 @@ public class SistemaArquivos {
         }
       }
     } catch (IOException e) {
-      // Arquivo não existe ainda, retorna lista vazia
     }
     return professores;
   }
@@ -164,7 +161,6 @@ public class SistemaArquivos {
         }
       }
     } catch (IOException e) {
-      // Arquivo não existe ainda, retorna lista vazia
     }
     return secretarias;
   }
@@ -182,7 +178,6 @@ public class SistemaArquivos {
           Status status = Status.valueOf(dados[3]);
           List<Aluno> alunos = new ArrayList<>();
           Disciplina disciplina = new Disciplina(cargaHoraria, nome, obrigatoria, alunos, status);
-          // Se existir campo de professor, associar
           if (dados.length >= 6 && !dados[5].isEmpty()) {
             String emailProfessor = dados[5];
             List<Professor> professores = carregarProfessores();
@@ -197,7 +192,6 @@ public class SistemaArquivos {
         }
       }
     } catch (IOException e) {
-      // Arquivo não existe ainda, retorna lista vazia
     }
     return disciplinas;
   }
@@ -223,14 +217,11 @@ public class SistemaArquivos {
         }
       }
     } catch (IOException e) {
-      // Arquivo não existe ainda, retorna lista vazia
     }
     return matriculas;
   }
 
-  // Métodos auxiliares
   private static Curso buscarCursoPorNome(String nome) {
-    // Implementação simplificada - retorna um curso padrão
     return new Curso(new ArrayList<>(), nome, 180);
   }
 
@@ -257,7 +248,6 @@ public class SistemaArquivos {
     return null;
   }
 
-  // Métodos para reescrever arquivos (para updates)
   public static void reescreverDisciplinas(List<Disciplina> disciplinas) {
     try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_DISCIPLINAS))) {
       for (Disciplina disciplina : disciplinas) {
@@ -289,7 +279,6 @@ public class SistemaArquivos {
         if (dados.length >= 3) {
           String emailArquivo = dados[1];
 
-          // Se for verificação genérica (qualquer tipo) ou tipo específico
           if ("qualquer".equalsIgnoreCase(tipoUsuario)) {
             if (emailArquivo.equalsIgnoreCase(email)) {
               return true;
@@ -303,12 +292,10 @@ public class SistemaArquivos {
         }
       }
     } catch (IOException e) {
-      // Arquivo não existe, usuário não existe
     }
     return false;
   }
 
-  // Método específico para verificar se email já existe (mais simples)
   public static boolean emailJaExiste(String email) {
     try (BufferedReader reader = new BufferedReader(new FileReader(ARQUIVO_USUARIOS))) {
       String linha;
@@ -322,12 +309,10 @@ public class SistemaArquivos {
         }
       }
     } catch (IOException e) {
-      // Arquivo não existe, nenhum usuário cadastrado ainda
     }
     return false;
   }
 
-  // Método para obter todos os usuários (útil para relatórios)
   public static List<Usuario> carregarTodosUsuarios() {
     List<Usuario> usuarios = new ArrayList<>();
     usuarios.addAll(carregarAlunos());
@@ -336,7 +321,7 @@ public class SistemaArquivos {
     return usuarios;
   }
 
-  // Método para limpar todos os dados (útil para testes)
+  // deixar para testar na sala (limpa todos os dados)
   public static void limparTodosDados() {
     try {
       new FileWriter(ARQUIVO_USUARIOS).close();
