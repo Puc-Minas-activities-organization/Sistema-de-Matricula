@@ -1,6 +1,7 @@
 package com.sm;
 
-import java.time.LocalDate;
+import com.sm.services.MatriculaService;
+import com.sm.services.MatriculaValidationService;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,95 +57,46 @@ public class Aluno extends Usuario {
     this.maxOptativas = maxOptativas;
   }
 
-  // matricula o aluno em alguma disciplina pelo nome dela
   public boolean matricular(String nomeDisciplina) {
-    if (!Secretaria.isPeriodoMatriculaAtivo()) {
-      System.out.println("Não é possível se matricular fora do período de matrícula.");
-      return false;
-    }
-    List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
-    for (Disciplina disciplina : disciplinas) {
-      if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
-        if (disciplina.getStatus() != Status.ATIVA) {
-          System.out.println("Disciplina não está ativa.");
-          return false;
-        }
-        int numAlunos = disciplina.getAlunos().size();
-        if (numAlunos >= Disciplina.MAX_ALUNOS) {
-          System.out.println("Disciplina lotada.");
-          return false;
-        }
-        List<Matricula> todasMatriculas = SistemaArquivos.carregarMatriculas();
-        for (Matricula m : todasMatriculas) {
-          if (m.getAluno().getEmail().equalsIgnoreCase(this.getEmail())
-              && m.getDisciplina().getNome().equalsIgnoreCase(nomeDisciplina)) {
-            System.out.println("Você já está matriculado nesta disciplina.");
-            return false;
-          }
-        }
-        int obrigatoriasAtual = 0;
-        int optativasAtual = 0;
-        for (Matricula m : todasMatriculas) {
-          if (m.getAluno().getEmail().equalsIgnoreCase(this.getEmail())) {
-            if (m.getDisciplina().isObrigatoria()) {
-              obrigatoriasAtual++;
-            } else {
-              optativasAtual++;
-            }
-          }
-        }
-        if (disciplina.isObrigatoria() && obrigatoriasAtual >= maxObrigatorias) {
-          System.out.println("Limite de disciplinas obrigatórias atingido.");
-          return false;
-        }
-        if (!disciplina.isObrigatoria() && optativasAtual >= maxOptativas) {
-          System.out.println("Limite de disciplinas optativas atingido.");
-          return false;
-        }
-        Matricula matricula = new Matricula(disciplina, this, LocalDate.now());
-        SistemaArquivos.salvarMatricula(matricula);
-        this.matriculas.add(matricula);
-        disciplina.getAlunos().add(this);
-
-        List<Disciplina> todasDisciplinas = SistemaArquivos.carregarDisciplinas();
-        for (Disciplina d : todasDisciplinas) {
-          if (d.getNome().equalsIgnoreCase(disciplina.getNome())) {
-            d.setAlunos(disciplina.getAlunos());
-          }
-        }
-        SistemaArquivos.reescreverDisciplinas(todasDisciplinas);
-        System.out.println("Matrícula realizada com sucesso!");
-        return true;
-      }
-    }
-    System.out.println("Disciplina não encontrada.");
-    return false;
+    return MatriculaService.matricularAluno(this, nomeDisciplina);
   }
 
-  // lista as disciplinas que tao ativas
+  public boolean cancelarMatricula(String nomeDisciplina) {
+    return MatriculaService.cancelarMatricula(this, nomeDisciplina);
+  }
+
   public void listarDisciplinasDisponiveis() {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
+    List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
     System.out.println("\n=== DISCIPLINAS DISPONÍVEIS ===");
 
+    boolean temDisponiveis = false;
     for (Disciplina disciplina : disciplinas) {
-      if (disciplina.getStatus() == Status.ATIVA
-          && disciplina.getAlunos().size() < Disciplina.MAX_ALUNOS) {
-        System.out.println("Nome: " + disciplina.getNome());
-        System.out.println("Carga Horária: " + disciplina.getCargaHoraria());
-        System.out.println("Tipo: " + (disciplina.isObrigatoria() ? "Obrigatória" : "Optativa"));
-        System.out.println(
-            "Vagas disponíveis: " + (Disciplina.MAX_ALUNOS - disciplina.getAlunos().size()));
-        if (disciplina.getProfessor() != null) {
-          System.out.println("Professor: " + disciplina.getProfessor().getEmail());
-        } else {
-          System.out.println("Professor: (não vinculado)");
+      if (disciplina.getStatus() == Status.ATIVA) {
+        int alunosMatriculados = MatriculaValidationService.contarAlunosMatriculados(
+            disciplina.getNome(), matriculas);
+        
+        if (alunosMatriculados < Disciplina.MAX_ALUNOS) {
+          System.out.println("Nome: " + disciplina.getNome());
+          System.out.println("Carga Horária: " + disciplina.getCargaHoraria());
+          System.out.println("Tipo: " + (disciplina.isObrigatoria() ? "Obrigatória" : "Optativa"));
+          System.out.println("Vagas disponíveis: " + (Disciplina.MAX_ALUNOS - alunosMatriculados));
+          if (disciplina.getProfessor() != null) {
+            System.out.println("Professor: " + disciplina.getProfessor().getEmail());
+          } else {
+            System.out.println("Professor: (não vinculado)");
+          }
+          System.out.println("------------------------");
+          temDisponiveis = true;
         }
-        System.out.println("------------------------");
       }
+    }
+    
+    if (!temDisponiveis) {
+      System.out.println("Não há disciplinas disponíveis no momento.");
     }
   }
 
-  // Método para visualizar suas matrículas
   public void visualizarMatriculas() {
     List<Matricula> todasMatriculas = SistemaArquivos.carregarMatriculas();
     System.out.println("\n=== SUAS MATRÍCULAS ===");
@@ -154,8 +106,7 @@ public class Aluno extends Usuario {
       if (matricula.getAluno().getEmail().equalsIgnoreCase(this.getEmail())) {
         System.out.println("Disciplina: " + matricula.getDisciplina().getNome());
         System.out.println("Data da Matrícula: " + matricula.getDataMatricula());
-        System.out.println(
-            "Tipo: " + (matricula.getDisciplina().isObrigatoria() ? "Obrigatória" : "Optativa"));
+        System.out.println("Tipo: " + (matricula.getDisciplina().isObrigatoria() ? "Obrigatória" : "Optativa"));
         System.out.println("------------------------");
         temMatricula = true;
       }
@@ -164,41 +115,5 @@ public class Aluno extends Usuario {
     if (!temMatricula) {
       System.out.println("Você não possui matrículas ativas.");
     }
-  }
-
-  // Método para cancelar matrícula em uma disciplina
-  public boolean cancelarMatricula(String nomeDisciplina) {
-    if (!Secretaria.isPeriodoMatriculaAtivo()) {
-      System.out.println("Não é possível cancelar matrícula fora do período de matrícula.");
-      return false;
-    }
-    List<Matricula> todasMatriculas = SistemaArquivos.carregarMatriculas();
-    boolean encontrou = false;
-    Matricula matriculaParaRemover = null;
-    for (Matricula m : todasMatriculas) {
-      if (m.getAluno().getEmail().equalsIgnoreCase(this.getEmail())
-          && m.getDisciplina().getNome().equalsIgnoreCase(nomeDisciplina)) {
-        matriculaParaRemover = m;
-        encontrou = true;
-        break;
-      }
-    }
-    if (!encontrou) {
-      System.out.println("Você não está matriculado nesta disciplina.");
-      return false;
-    }
-
-    todasMatriculas.remove(matriculaParaRemover);
-    SistemaArquivos.reescreverMatriculas(todasMatriculas);
-    // Remove aluno da lista de alunos da disciplina
-    List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
-    for (Disciplina d : disciplinas) {
-      if (d.getNome().equalsIgnoreCase(nomeDisciplina)) {
-        d.getAlunos().removeIf(a -> a.getEmail().equalsIgnoreCase(this.getEmail()));
-      }
-    }
-    SistemaArquivos.reescreverDisciplinas(disciplinas);
-    System.out.println("Matrícula cancelada com sucesso!");
-    return true;
   }
 }

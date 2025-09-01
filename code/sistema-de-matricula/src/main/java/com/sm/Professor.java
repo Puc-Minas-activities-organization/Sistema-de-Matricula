@@ -1,5 +1,7 @@
 package com.sm;
 
+import com.sm.services.BuscaService;
+import com.sm.services.MatriculaValidationService;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,29 +23,12 @@ public class Professor extends Usuario {
 
     //consulta os alunos somente das disciplina que ele leciona
     public void consultarAlunosDisciplina(String nomeDisciplina) {
-        boolean encontrou = false;
-        
-        for (Disciplina disciplina : this.disciplinas) {
-            if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
-                encontrou = true;
-                break;
-            }
-        }    
-        if (!encontrou) {
+        if (!BuscaService.professorLecionaDisciplina(this, nomeDisciplina)) {
             System.out.println("Você não leciona esta disciplina.");
             return;
         }
-        List<Disciplina> todasDisciplinas = SistemaArquivos.carregarDisciplinas();
-        Disciplina disciplinaEncontrada = null;
-        
-        for (Disciplina d : todasDisciplinas) {
-            if (d.getNome().equalsIgnoreCase(nomeDisciplina) && d.getStatus() == Status.ATIVA) {
-                disciplinaEncontrada = d;
-                break;
-            }
-        }
-        
-        if (disciplinaEncontrada == null) {
+        Disciplina disciplina = BuscaService.buscarDisciplinaPorNome(nomeDisciplina);
+        if (disciplina == null || disciplina.getStatus() != Status.ATIVA) {
             System.out.println("Disciplina não encontrada ou não está ativa.");
             return;
         }
@@ -86,28 +71,13 @@ public class Professor extends Usuario {
     }
     
     public void verificarStatusDisciplina(String nomeDisciplina) {
-        boolean encontrou = false;
-
-        for (Disciplina disciplina : this.disciplinas) {
-            if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
-                encontrou = true;
-                break;
-            }
-        }
-        
-        if (!encontrou) {
+        if (!BuscaService.professorLecionaDisciplina(this, nomeDisciplina)) {
             System.out.println("Você não leciona esta disciplina.");
             return;
         }
         
         List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
-        int contador = 0;
-        
-        for (Matricula matricula : matriculas) {
-            if (matricula.getDisciplina().getNome().equalsIgnoreCase(nomeDisciplina)) {
-                contador++;
-            }
-        }
+        int contador = MatriculaValidationService.contarAlunosMatriculados(nomeDisciplina, matriculas);
         
         System.out.println("\n=== STATUS DA DISCIPLINA: " + nomeDisciplina.toUpperCase() + " ===");
         System.out.println("Alunos matriculados: " + contador);

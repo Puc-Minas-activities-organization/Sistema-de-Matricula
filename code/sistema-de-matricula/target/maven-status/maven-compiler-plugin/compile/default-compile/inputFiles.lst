@@ -8,6 +8,9 @@ D:\Dev\code\Sistema-de-Matricula\code\sistema-de-matricula\src\main\java\com\sm\
 D:\Dev\code\Sistema-de-Matricula\code\sistema-de-matricula\src\main\java\com\sm\Matricula.java
 D:\Dev\code\Sistema-de-Matricula\code\sistema-de-matricula\src\main\java\com\sm\Professor.java
 D:\Dev\code\Sistema-de-Matricula\code\sistema-de-matricula\src\main\java\com\sm\Secretaria.java
+D:\Dev\code\Sistema-de-Matricula\code\sistema-de-matricula\src\main\java\com\sm\services\BuscaService.java
+D:\Dev\code\Sistema-de-Matricula\code\sistema-de-matricula\src\main\java\com\sm\services\MatriculaService.java
+D:\Dev\code\Sistema-de-Matricula\code\sistema-de-matricula\src\main\java\com\sm\services\MatriculaValidationService.java
 D:\Dev\code\Sistema-de-Matricula\code\sistema-de-matricula\src\main\java\com\sm\SistemaArquivos.java
 D:\Dev\code\Sistema-de-Matricula\code\sistema-de-matricula\src\main\java\com\sm\SistemaAutenticacao.java
 D:\Dev\code\Sistema-de-Matricula\code\sistema-de-matricula\src\main\java\com\sm\Status.java
