@@ -492,7 +492,7 @@ public class SistemaArquivos {
       optativasCiencia.add("Redes de Computadores");
       optativasCiencia.add("Computação Gráfica");
       
-      Curso cienciaComputacao = new Curso(disciplinasCiencia, optativasCiencia, "Ciência da Computação", 240);
+      Curso cienciaComputacao = new Curso(disciplinasCiencia, optativasCiencia, "Ciencia da Computacao", 240);
       salvarCurso(cienciaComputacao);
       
       System.out.println("Cursos padrão inicializados com sucesso!");

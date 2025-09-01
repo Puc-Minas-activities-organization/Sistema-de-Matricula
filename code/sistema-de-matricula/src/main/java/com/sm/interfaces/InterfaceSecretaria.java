@@ -1,6 +1,8 @@
 package com.sm.interfaces;
 
 import com.sm.Secretaria;
+
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Scanner;
 
@@ -10,7 +12,7 @@ public class InterfaceSecretaria {
 
   public InterfaceSecretaria(Secretaria secretaria) {
     this.secretaria = secretaria;
-    this.scanner = new Scanner(System.in);
+    this.scanner = new Scanner(System.in, StandardCharsets.UTF_8);
   }
 
   public void exibirMenu() {
@@ -86,7 +88,8 @@ public class InterfaceSecretaria {
   private void gerarCurriculo() {
     System.out.print("Digite o nome do curso: ");
     String nomeCurso = scanner.nextLine();
-    secretaria.gerarCurriculo(nomeCurso);
+    String nomeCursoNormalizado = normalizarTexto(nomeCurso);
+    secretaria.gerarCurriculo(nomeCursoNormalizado);
   }
 
   private void cadastrarDisciplina() {
@@ -168,4 +171,36 @@ public class InterfaceSecretaria {
       System.out.println("------------------------");
     }
   }
+
+    private String normalizarTexto(String texto) { // muito feio 
+    if (texto == null) {
+        return null;
+    }
+    
+    return texto.toLowerCase()
+        .replace("ã", "a")
+        .replace("á", "a")
+        .replace("à", "a")
+        .replace("â", "a")
+        .replace("ä", "a")
+        .replace("é", "e")
+        .replace("è", "e")
+        .replace("ê", "e")
+        .replace("ë", "e")
+        .replace("í", "i")
+        .replace("ì", "i")
+        .replace("î", "i")
+        .replace("ï", "i")
+        .replace("ó", "o")
+        .replace("ò", "o")
+        .replace("ô", "o")
+        .replace("õ", "o")
+        .replace("ö", "o")
+        .replace("ú", "u")
+        .replace("ù", "u")
+        .replace("û", "u")
+        .replace("ü", "u")
+        .replace("ç", "c")
+        .trim();
+}
 }
