@@ -15,35 +15,43 @@ public class Secretaria extends Usuario {
 
   // 
   public void gerarCurriculo(String nomeCurso) {
+    Curso curso = SistemaArquivos.buscarCursoPorNome(nomeCurso);
+    
+    if (curso == null) {
+      System.out.println("Curso não encontrado: " + nomeCurso);
+      return;
+    }
+    
     System.out.println("\n=== CURRÍCULO DO CURSO: " + nomeCurso.toUpperCase() + " ===");
-
-    List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
+    System.out.println("Créditos necessários: " + curso.getCreditos());
+    
     double totalCargaHoraria = 0;
-    int totalObrigatorias = 0;
-    int totalOptativas = 0;
-
+    List<Disciplina> todasDisciplinas = SistemaArquivos.carregarDisciplinas();
+    
     System.out.println("\nDisciplinas Obrigatórias:");
-    for (Disciplina disciplina : disciplinas) {
-      if (disciplina.isObrigatoria()) {
-        System.out.println(
-            "- " + disciplina.getNome() + " (" + disciplina.getCargaHoraria() + "h)");
-        totalCargaHoraria += disciplina.getCargaHoraria();
-        totalObrigatorias++;
+    for (String nomeDisciplina : curso.getDisciplinasObrigatorias()) {
+      for (Disciplina disciplina : todasDisciplinas) {
+        if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
+          System.out.println("- " + disciplina.getNome() + " (" + disciplina.getCargaHoraria() + "h)");
+          totalCargaHoraria += disciplina.getCargaHoraria();
+          break;
+        }
       }
     }
-
+    
     System.out.println("\nDisciplinas Optativas:");
-    for (Disciplina disciplina : disciplinas) {
-      if (!disciplina.isObrigatoria()) {
-        System.out.println(
-            "- " + disciplina.getNome() + " (" + disciplina.getCargaHoraria() + "h)");
-        totalOptativas++;
+    for (String nomeDisciplina : curso.getDisciplinasOptativas()) {
+      for (Disciplina disciplina : todasDisciplinas) {
+        if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
+          System.out.println("- " + disciplina.getNome() + " (" + disciplina.getCargaHoraria() + "h)");
+          break;
+        }
       }
     }
-
+    
     System.out.println("\n=== RESUMO ===");
-    System.out.println("Total de disciplinas obrigatórias: " + totalObrigatorias);
-    System.out.println("Total de disciplinas optativas: " + totalOptativas);
+    System.out.println("Total de disciplinas obrigatórias: " + curso.getDisciplinasObrigatorias().size());
+    System.out.println("Total de disciplinas optativas: " + curso.getDisciplinasOptativas().size());
     System.out.println("Carga horária total das obrigatórias: " + totalCargaHoraria + "h");
   }
 

@@ -1,0 +1,2 @@
+Engenharia de Software;240;Algoritmos e Estruturas de Dados,Engenharia de Software,Banco de Dados,Programação Orientada a Objetos;Inteligência Artificial,Desenvolvimento Web
+Ciência da Computação;240;Cálculo I,Programação I,Estruturas Discretas,Sistemas Operacionais;Redes de Computadores,Computação Gráfica

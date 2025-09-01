@@ -10,8 +10,8 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== SISTEMA DE MATRÍCULA ===");
         
-        // deixar isso para os testes na sala
         inicializarDadosBasicos();
+        SistemaArquivos.inicializarDadosPadrao();
         
         int opcao;
         
@@ -120,11 +120,20 @@ public class Main {
         
         if (SistemaArquivos.carregarDisciplinas().isEmpty()) {
             Secretaria adminTemp = new Secretaria("temp", "temp");
-            adminTemp.cadastrarDisciplina("Programação Orientada a Objetos", 60, true);
-            adminTemp.cadastrarDisciplina("Estruturas de Dados", 60, true);
+            
+            adminTemp.cadastrarDisciplina("Algoritmos e Estruturas de Dados", 80, true);
+            adminTemp.cadastrarDisciplina("Engenharia de Software", 60, true);
             adminTemp.cadastrarDisciplina("Banco de Dados", 60, true);
-            adminTemp.cadastrarDisciplina("Desenvolvimento Web", 45, false);
-            adminTemp.cadastrarDisciplina("Inteligência Artificial", 45, false);
+            adminTemp.cadastrarDisciplina("Programacao Orientada a Objetos", 80, true);
+            adminTemp.cadastrarDisciplina("Calculo I", 80, true);
+            adminTemp.cadastrarDisciplina("Programacao I", 80, true);
+            adminTemp.cadastrarDisciplina("Estruturas Discretas", 60, true);
+            adminTemp.cadastrarDisciplina("Sistemas Operacionais", 60, true);
+            
+            adminTemp.cadastrarDisciplina("Inteligencia Artificial", 60, false);
+            adminTemp.cadastrarDisciplina("Desenvolvimento Web", 60, false);
+            adminTemp.cadastrarDisciplina("Redes de Computadores", 60, false);
+            adminTemp.cadastrarDisciplina("Computacao Grafica", 60, false);
         }
     }
 }

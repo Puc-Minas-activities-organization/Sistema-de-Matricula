@@ -1,6 +1,7 @@
 package com.sm.interfaces;
 
 import com.sm.Secretaria;
+import java.util.List;
 import java.util.Scanner;
 
 public class InterfaceSecretaria {
@@ -19,16 +20,17 @@ public class InterfaceSecretaria {
       System.out.println("\n=== MENU DA SECRETARIA ===");
       System.out.println("Bem-vindo, " + secretaria.getEmail());
       System.out.println("1. Gerar currículo de curso");
-      System.out.println("2. Cadastrar nova disciplina");
-      System.out.println("3. Remover disciplina");
-      System.out.println("4. Matricular aluno em disciplina");
-      System.out.println("5. Listar todas as disciplinas");
-      System.out.println("6. Cancelar disciplina");
-      System.out.println("7. Gerar relatório de matrículas");
-      System.out.println("8. Iniciar período de matrícula");
-      System.out.println("9. Finalizar período de matrícula");
-      System.out.println("10. Vincular professor a disciplina");
-      System.out.println("11. Desvincular professor de disciplina");
+      System.out.println("2. Listar cursos disponíveis");
+      System.out.println("3. Cadastrar nova disciplina");
+      System.out.println("4. Remover disciplina");
+      System.out.println("5. Matricular aluno em disciplina");
+      System.out.println("6. Listar todas as disciplinas");
+      System.out.println("7. Cancelar disciplina");
+      System.out.println("8. Gerar relatório de matrículas");
+      System.out.println("9. Iniciar período de matrícula");
+      System.out.println("10. Finalizar período de matrícula");
+      System.out.println("11. Vincular professor a disciplina");
+      System.out.println("12. Desvincular professor de disciplina");
       System.out.println("0. Sair");
       System.out.print("Escolha uma opção: ");
 
@@ -40,33 +42,36 @@ public class InterfaceSecretaria {
           gerarCurriculo();
           break;
         case 2:
-          cadastrarDisciplina();
+          listarCursos();
           break;
         case 3:
-          removerDisciplina();
+          cadastrarDisciplina();
           break;
         case 4:
-          matricularAluno();
+          removerDisciplina();
           break;
         case 5:
-          secretaria.listarTodasDisciplinas();
+          matricularAluno();
           break;
         case 6:
-          cancelarDisciplina();
+          secretaria.listarTodasDisciplinas();
           break;
         case 7:
-          secretaria.gerarRelatorioMatriculas();
+          cancelarDisciplina();
           break;
         case 8:
-          secretaria.iniciarPeriodoMatricula();
+          secretaria.gerarRelatorioMatriculas();
           break;
         case 9:
-          secretaria.finalizarPeriodoMatricula();
+          secretaria.iniciarPeriodoMatricula();
           break;
         case 10:
-          vincularProfessorADisciplina();
+          secretaria.finalizarPeriodoMatricula();
           break;
         case 11:
+          vincularProfessorADisciplina();
+          break;
+        case 12:
           desvincularProfessorDeDisciplina();
           break;
         case 0:
@@ -89,7 +94,15 @@ public class InterfaceSecretaria {
     String nome = scanner.nextLine();
 
     System.out.print("Digite a carga horária: ");
-    double cargaHoraria = scanner.nextDouble();
+    String cargaHorariaStr = scanner.nextLine();
+    double cargaHoraria;
+    
+    try {
+      cargaHoraria = Double.parseDouble(cargaHorariaStr.replace(",", "."));
+    } catch (NumberFormatException e) {
+      System.out.println("Carga horária inválida. Use apenas números (ex: 40 ou 40.5)");
+      return;
+    }
 
     System.out.print("É obrigatória? (true/false): ");
     boolean obrigatoria = scanner.nextBoolean();
@@ -136,5 +149,23 @@ public class InterfaceSecretaria {
     System.out.print("Digite o nome da disciplina: ");
     String nomeDisciplina = scanner.nextLine();
     secretaria.desvincularProfessorDeDisciplina(nomeDisciplina);
+  }
+
+  private void listarCursos() {
+    List<com.sm.Curso> cursos = com.sm.SistemaArquivos.carregarCursos();
+    System.out.println("\n=== CURSOS DISPONÍVEIS ===");
+    
+    if (cursos.isEmpty()) {
+      System.out.println("Nenhum curso cadastrado.");
+      return;
+    }
+    
+    for (com.sm.Curso curso : cursos) {
+      System.out.println("Nome: " + curso.getNome());
+      System.out.println("Créditos: " + curso.getCreditos());
+      System.out.println("Disciplinas Obrigatórias: " + curso.getDisciplinasObrigatorias().size());
+      System.out.println("Disciplinas Optativas: " + curso.getDisciplinasOptativas().size());
+      System.out.println("------------------------");
+    }
   }
 }

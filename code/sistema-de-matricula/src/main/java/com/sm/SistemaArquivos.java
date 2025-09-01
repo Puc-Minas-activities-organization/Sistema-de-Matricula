@@ -28,6 +28,8 @@ public class SistemaArquivos {
       "code/sistema-de-matricula/src/main/java/com/sm/resources/disciplinas.txt";
   private static final String ARQUIVO_MATRICULAS =
       "code/sistema-de-matricula/src/main/java/com/sm/resources/matriculas.txt";
+  private static final String ARQUIVO_CURSOS =
+      "code/sistema-de-matricula/src/main/java/com/sm/resources/cursos.txt";
 
   // salva qualquer usuário no arquivo
   public static void salvarUsuario(Usuario usuario) {
@@ -221,10 +223,6 @@ public class SistemaArquivos {
     return matriculas;
   }
 
-  private static Curso buscarCursoPorNome(String nome) {
-    return new Curso(new ArrayList<>(), nome, 180);
-  }
-
   private static Disciplina buscarDisciplinaPorNome(String nome) {
     List<Disciplina> disciplinas = carregarDisciplinas();
     return buscarDisciplinaPorNome(nome, disciplinas);
@@ -327,9 +325,101 @@ public class SistemaArquivos {
       new FileWriter(ARQUIVO_USUARIOS).close();
       new FileWriter(ARQUIVO_DISCIPLINAS).close();
       new FileWriter(ARQUIVO_MATRICULAS).close();
+      new FileWriter(ARQUIVO_CURSOS).close();
       System.out.println("Todos os dados foram limpos.");
     } catch (IOException e) {
       System.err.println("Erro ao limpar dados: " + e.getMessage());
+    }
+  }
+
+  public static void salvarCurso(Curso curso) {
+    try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_CURSOS, true))) {
+      writer.println(curso.getNome() + ";" + curso.getCreditos() + ";"
+          + String.join(",", curso.getDisciplinasObrigatorias()) + ";"
+          + String.join(",", curso.getDisciplinasOptativas()));
+    } catch (IOException e) {
+      System.err.println("Erro ao salvar curso: " + e.getMessage());
+    }
+  }
+
+  public static List<Curso> carregarCursos() {
+    List<Curso> cursos = new ArrayList<>();
+    try (BufferedReader reader = new BufferedReader(new FileReader(ARQUIVO_CURSOS))) {
+      String linha;
+      while ((linha = reader.readLine()) != null) {
+        String[] dados = linha.split(";");
+        if (dados.length >= 4) {
+          String nome = dados[0];
+          int creditos = Integer.parseInt(dados[1]);
+          List<String> disciplinasObrigatorias = new ArrayList<>();
+          List<String> disciplinasOptativas = new ArrayList<>();
+          
+          if (!dados[2].isEmpty()) {
+            String[] obrigatorias = dados[2].split(",");
+            for (String disciplina : obrigatorias) {
+              if (!disciplina.trim().isEmpty()) {
+                disciplinasObrigatorias.add(disciplina.trim());
+              }
+            }
+          }
+          
+          if (!dados[3].isEmpty()) {
+            String[] optativas = dados[3].split(",");
+            for (String disciplina : optativas) {
+              if (!disciplina.trim().isEmpty()) {
+                disciplinasOptativas.add(disciplina.trim());
+              }
+            }
+          }
+          
+          cursos.add(new Curso(disciplinasObrigatorias, disciplinasOptativas, nome, creditos));
+        }
+      }
+    } catch (IOException e) {
+    }
+    return cursos;
+  }
+
+  public static Curso buscarCursoPorNome(String nome) {
+    List<Curso> cursos = carregarCursos();
+    for (Curso curso : cursos) {
+      if (curso.getNome().equalsIgnoreCase(nome)) {
+        return curso;
+      }
+    }
+    return null;
+  }
+
+  public static void inicializarDadosPadrao() {
+    List<Curso> cursos = carregarCursos();
+    if (cursos.isEmpty()) {
+      List<String> disciplinasEngSoftware = new ArrayList<>();
+      disciplinasEngSoftware.add("Algoritmos e Estruturas de Dados");
+      disciplinasEngSoftware.add("Engenharia de Software");
+      disciplinasEngSoftware.add("Banco de Dados");
+      disciplinasEngSoftware.add("Programação Orientada a Objetos");
+      
+      List<String> optativasEngSoftware = new ArrayList<>();
+      optativasEngSoftware.add("Inteligência Artificial");
+      optativasEngSoftware.add("Desenvolvimento Web");
+      
+      Curso engenhariaSoftware = new Curso(disciplinasEngSoftware, optativasEngSoftware, "Engenharia de Software", 240);
+      salvarCurso(engenhariaSoftware);
+      
+      List<String> disciplinasCiencia = new ArrayList<>();
+      disciplinasCiencia.add("Cálculo I");
+      disciplinasCiencia.add("Programação I");
+      disciplinasCiencia.add("Estruturas Discretas");
+      disciplinasCiencia.add("Sistemas Operacionais");
+      
+      List<String> optativasCiencia = new ArrayList<>();
+      optativasCiencia.add("Redes de Computadores");
+      optativasCiencia.add("Computação Gráfica");
+      
+      Curso cienciaComputacao = new Curso(disciplinasCiencia, optativasCiencia, "Ciência da Computação", 240);
+      salvarCurso(cienciaComputacao);
+      
+      System.out.println("Cursos padrão inicializados com sucesso!");
     }
   }
 }
