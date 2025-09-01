@@ -1,0 +1,140 @@
+@startuml
+
+enum Status {
+  ATIVA
+  CANCELADA
+}
+
+abstract class Usuario {
+  -email: String
+  -senha: String
+  +getEmail(): String
+  +setEmail(email: String): void
+  +getSenha(): String
+  +setSenha(senha: String): void
+}
+
+class Aluno {
+  -matriculas: List<Matricula>
+  -curso: Curso
+  -maxObrigatorias: int
+  -maxOptativas: int
+  +matricular(nomeDisciplina: String): boolean
+  +cancelarMatricula(nomeDisciplina: String): boolean
+  +listarDisciplinasDisponiveis(): void
+  +visualizarMatriculas(): void
+}
+
+class Professor {
+  -disciplinas: List<Disciplina>
+  +consultarAlunosDisciplina(nomeDisciplina: String): void
+  +listarMinhasDisciplinas(): void
+  +verificarStatusDisciplina(nomeDisciplina: String): void
+}
+
+class Secretaria {
+  +gerarCurriculo(nomeCurso: String): void
+  +iniciarPeriodoMatricula(): void
+  +finalizarPeriodoMatricula(): void
+  +cadastrarDisciplina(nome: String, cargaHoraria: double, obrigatoria: boolean): boolean
+  +removerDisciplina(nome: String): boolean
+  +matricularAluno(emailAluno: String, nomeDisciplina: String): boolean
+  +listarTodasDisciplinas(): void
+  +cancelarDisciplina(nomeDisciplina: String): boolean
+  +gerarRelatorioMatriculas(): void
+  +vincularProfessorADisciplina(nomeDisciplina: String, emailProfessor: String): boolean
+  +desvincularProfessorDeDisciplina(nomeDisciplina: String): boolean
+}
+
+class Disciplina {
+  +MAX_ALUNOS: int
+  +MIN_ALUNOS: int
+  -cargaHoraria: double
+  -nome: String
+  -obrigatoria: boolean
+  -alunos: List<Aluno>
+  -status: Status
+  -professor: Professor
+  +getProfessor(): Professor
+  +setProfessor(professor: Professor): void
+  +getCargaHoraria(): double
+  +setCargaHoraria(cargaHoraria: double): void
+  +getNome(): String
+  +setNome(nome: String): void
+  +isObrigatoria(): boolean
+  +setObrigatoria(obrigatoria: boolean): void
+  +getAlunos(): List<Aluno>
+  +setAlunos(alunos: List<Aluno>): void
+  +getStatus(): Status
+  +setStatus(status: Status): void
+}
+
+class Matricula {
+  -disciplina: Disciplina
+  -aluno: Aluno
+  -dataMatricula: LocalDate
+  +getDisciplina(): Disciplina
+  +setDisciplina(disciplina: Disciplina): void
+  +getAluno(): Aluno
+  +setAluno(aluno: Aluno): void
+  +getDataMatricula(): LocalDate
+  +setDataMatricula(dataMatricula: LocalDate): void
+  +notificarSistemaCobranca(aluno: Aluno): void
+}
+
+class Curso {
+  -disciplinasObrigatorias: List<String>
+  -disciplinasOptativas: List<String>
+  -nome: String
+  -creditos: int
+  +getDisciplinasObrigatorias(): List<String>
+  +setDisciplinasObrigatorias(disciplinasObrigatorias: List<String>): void
+  +getDisciplinasOptativas(): List<String>
+  +setDisciplinasOptativas(disciplinasOptativas: List<String>): void
+  +getNome(): String
+  +setNome(nome: String): void
+  +getCreditos(): int
+  +setCreditos(creditos: int): void
+}
+
+class SistemaAutenticacao {
+  +autenticar(email: String, senha: String): Usuario
+  +cadastrarUsuario(email: String, senha: String, tipoUsuario: String): boolean
+}
+
+class SistemaArquivos {
+  +salvarUsuario(usuario: Usuario): void
+  +salvarDisciplina(disciplina: Disciplina): void
+  +salvarMatricula(matricula: Matricula): void
+  +carregarAlunos(): List<Aluno>
+  +carregarProfessores(): List<Professor>
+  +carregarSecretarias(): List<Secretaria>
+  +carregarDisciplinas(): List<Disciplina>
+  +carregarMatriculas(): List<Matricula>
+  +carregarCursos(): List<Curso>
+  +emailJaExiste(email: String): boolean
+  +atualizarDisciplinasDoProfessor(emailProfessor: String, nomesDisciplinas: List<String>): void
+}
+
+Usuario <|-- Aluno
+Usuario <|-- Professor
+Usuario <|-- Secretaria
+
+Aluno "1" -- "0..n" Matricula
+Aluno "1" -- "1" Curso
+Professor "1" -- "0..n" Disciplina
+Disciplina "1" -- "0..n" Aluno
+Disciplina "1" -- "1" Professor
+Disciplina "1" -- "1" Status
+Matricula "1" -- "1" Disciplina
+Matricula "1" -- "1" Aluno
+Curso "1" -- "0..n" Disciplina
+
+SistemaAutenticacao ..> Usuario
+SistemaAutenticacao ..> SistemaArquivos
+SistemaArquivos ..> Usuario
+SistemaArquivos ..> Disciplina
+SistemaArquivos ..> Matricula
+SistemaArquivos ..> Curso
+
+@enduml

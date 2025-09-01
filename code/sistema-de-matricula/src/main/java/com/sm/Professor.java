@@ -59,13 +59,20 @@ public class Professor extends Usuario {
             System.out.println("Você não está lecionando nenhuma disciplina.");
             return;
         }
-        
+
+        List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
         for (Disciplina disciplina : this.disciplinas) {
+            int alunosMatriculados = 0;
+            for (Matricula m : matriculas) {
+                if (m.getDisciplina().getNome().equalsIgnoreCase(disciplina.getNome())) {
+                    alunosMatriculados++;
+               }
+            }
             System.out.println("Nome: " + disciplina.getNome());
             System.out.println("Carga Horária: " + disciplina.getCargaHoraria());
             System.out.println("Tipo: " + (disciplina.isObrigatoria() ? "Obrigatória" : "Optativa"));
             System.out.println("Status: " + disciplina.getStatus());
-            System.out.println("Alunos matriculados: " + disciplina.getAlunos().size());
+            System.out.println("Alunos matriculados: " + alunosMatriculados);
             System.out.println("------------------------");
         }
     }

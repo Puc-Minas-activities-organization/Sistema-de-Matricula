@@ -1,6 +1,8 @@
 package com.sm.interfaces;
 
 import com.sm.Aluno;
+import com.sm.Matricula;
+
 import java.util.Scanner;
 
 public class InterfaceAluno {
@@ -54,11 +56,15 @@ public class InterfaceAluno {
     System.out.print("Digite o nome da disciplina: ");
     String nomeDisciplina = scanner.nextLine();
     aluno.matricular(nomeDisciplina);
+    System.out.println("Disciplina: " + nomeDisciplina + " matriculada com sucesso.");
+    Matricula.notificarSistemaCobranca(aluno);
   }
 
   private void cancelarMatriculaEmDisciplina() {
     System.out.print("Digite o nome da disciplina para cancelar matrícula: ");
     String nomeDisciplina = scanner.nextLine();
     aluno.cancelarMatricula(nomeDisciplina);
+    System.out.println("Disciplina: " + nomeDisciplina + " cancelada com sucesso.");
+    Matricula.notificarSistemaCobranca(aluno);
   }
 }

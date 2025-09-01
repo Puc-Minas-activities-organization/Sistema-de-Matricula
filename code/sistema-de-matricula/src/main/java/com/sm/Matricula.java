@@ -32,5 +32,7 @@ public class Matricula {
         this.dataMatricula = dataMatricula;
     }
 
-   
+    public static void notificarSistemaCobranca(Aluno aluno) {
+        System.out.println("Notificando sistema de cobrança para o aluno: " + aluno.getEmail());
+    }
 }
