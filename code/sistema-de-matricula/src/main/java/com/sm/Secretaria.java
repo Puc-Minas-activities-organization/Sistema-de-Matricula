@@ -11,7 +11,7 @@ public class Secretaria extends Usuario {
     super(email, senha);
   }
 
-  // Método para gerar currículo de um curso
+  // 
   public void gerarCurriculo(String nomeCurso) {
     System.out.println("\n=== CURRÍCULO DO CURSO: " + nomeCurso.toUpperCase() + " ===");
 
@@ -45,14 +45,14 @@ public class Secretaria extends Usuario {
     System.out.println("Carga horária total das obrigatórias: " + totalCargaHoraria + "h");
   }
 
-  // Iniciar período de matrícula
+  // secretária que decide quando o período de matricula inicia
   public void iniciarPeriodoMatricula() {
     periodoMatriculaAtivo = true;
     System.out.println(
         "Período de matrícula iniciado. Os alunos podem se inscrever ou cancelar matrículas.");
   }
 
-  // Finalizar período de matrícula
+  // decide também quando acaba
   public void finalizarPeriodoMatricula() {
     periodoMatriculaAtivo = false;
     System.out.println(
@@ -60,12 +60,10 @@ public class Secretaria extends Usuario {
     cancelarDisciplinasComPoucosAlunos();
   }
 
-  // Verifica se o período está ativo
   public static boolean isPeriodoMatriculaAtivo() {
     return periodoMatriculaAtivo;
   }
 
-  // Cancela disciplinas com menos de 3 alunos
   private void cancelarDisciplinasComPoucosAlunos() {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
@@ -90,11 +88,9 @@ public class Secretaria extends Usuario {
     }
   }
 
-  // Método para cadastrar nova disciplina
   public boolean cadastrarDisciplina(String nome, double cargaHoraria, boolean obrigatoria) {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
 
-    // Verificar se a disciplina já existe
     for (Disciplina disciplina : disciplinas) {
       if (disciplina.getNome().equalsIgnoreCase(nome)) {
         System.out.println("Disciplina já cadastrada.");
@@ -102,7 +98,6 @@ public class Secretaria extends Usuario {
       }
     }
 
-    // Criar nova disciplina
     Disciplina novaDisciplina =
         new Disciplina(cargaHoraria, nome, obrigatoria, new ArrayList<>(), Status.ATIVA);
     SistemaArquivos.salvarDisciplina(novaDisciplina);
@@ -111,12 +106,11 @@ public class Secretaria extends Usuario {
     return true;
   }
 
-  // Método para remover disciplina
   public boolean removerDisciplina(String nome) {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     boolean encontrou = false;
 
-    // Verificar se há alunos matriculados
+
     List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
     for (Matricula matricula : matriculas) {
       if (matricula.getDisciplina().getNome().equalsIgnoreCase(nome)) {
@@ -125,7 +119,6 @@ public class Secretaria extends Usuario {
       }
     }
 
-    // Remover disciplina
     for (int i = 0; i < disciplinas.size(); i++) {
       if (disciplinas.get(i).getNome().equalsIgnoreCase(nome)) {
         disciplinas.remove(i);
@@ -144,13 +137,11 @@ public class Secretaria extends Usuario {
     }
   }
 
-  // Método para matricular aluno em disciplina
   public boolean matricularAluno(String emailAluno, String nomeDisciplina) {
     List<Aluno> alunos = SistemaArquivos.carregarAlunos();
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
 
-    // Buscar aluno
     Aluno aluno = null;
     for (Aluno a : alunos) {
       if (a.getEmail().equalsIgnoreCase(emailAluno)) {
@@ -164,7 +155,6 @@ public class Secretaria extends Usuario {
       return false;
     }
 
-    // Buscar disciplina
     Disciplina disciplina = null;
     for (Disciplina d : disciplinas) {
       if (d.getNome().equalsIgnoreCase(nomeDisciplina)) {
@@ -183,7 +173,6 @@ public class Secretaria extends Usuario {
       return false;
     }
 
-    // Verificar se já está matriculado
     for (Matricula m : matriculas) {
       if (m.getAluno().getEmail().equalsIgnoreCase(emailAluno)
           && m.getDisciplina().getNome().equalsIgnoreCase(nomeDisciplina)) {
@@ -192,7 +181,6 @@ public class Secretaria extends Usuario {
       }
     }
 
-    // Contar alunos na disciplina
     int contador = 0;
     for (Matricula m : matriculas) {
       if (m.getDisciplina().getNome().equalsIgnoreCase(nomeDisciplina)) {
@@ -204,8 +192,6 @@ public class Secretaria extends Usuario {
       System.out.println("Disciplina lotada.");
       return false;
     }
-
-    // Realizar matrícula
     Matricula matricula = new Matricula(disciplina, aluno, LocalDate.now());
     SistemaArquivos.salvarMatricula(matricula);
 
@@ -213,7 +199,6 @@ public class Secretaria extends Usuario {
     return true;
   }
 
-  // Método para listar todas as disciplinas
   public void listarTodasDisciplinas() {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
@@ -245,12 +230,10 @@ public class Secretaria extends Usuario {
     }
   }
 
-  // Método para cancelar disciplina (se tiver menos que o mínimo de alunos)
   public boolean cancelarDisciplina(String nomeDisciplina) {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
 
-    // Contar matrículas
     int contador = 0;
     for (Matricula matricula : matriculas) {
       if (matricula.getDisciplina().getNome().equalsIgnoreCase(nomeDisciplina)) {
@@ -262,8 +245,6 @@ public class Secretaria extends Usuario {
       System.out.println("Disciplina não pode ser cancelada - possui número suficiente de alunos.");
       return false;
     }
-
-    // Alterar status da disciplina
     for (Disciplina disciplina : disciplinas) {
       if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
         disciplina.setStatus(Status.CANCELADA);
@@ -277,7 +258,6 @@ public class Secretaria extends Usuario {
     return false;
   }
 
-  // Método para gerar relatório de matrículas
   public void gerarRelatorioMatriculas() {
     List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
     System.out.println("\n=== RELATÓRIO DE MATRÍCULAS ===");
@@ -295,7 +275,6 @@ public class Secretaria extends Usuario {
     }
   }
 
-  // Método para vincular um professor a uma disciplina
   public boolean vincularProfessorADisciplina(String nomeDisciplina, String emailProfessor) {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     List<Professor> professores = SistemaArquivos.carregarProfessores();
@@ -327,7 +306,6 @@ public class Secretaria extends Usuario {
     return true;
   }
 
-  // Método para desvincular professor de uma disciplina
   public boolean desvincularProfessorDeDisciplina(String nomeDisciplina) {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     Disciplina disciplina = null;

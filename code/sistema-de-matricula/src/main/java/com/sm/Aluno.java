@@ -56,7 +56,7 @@ public class Aluno extends Usuario {
     this.maxOptativas = maxOptativas;
   }
 
-  // Método para matricular em uma disciplina
+  // matricula o aluno em alguma disciplina pelo nome dela
   public boolean matricular(String nomeDisciplina) {
     if (!Secretaria.isPeriodoMatriculaAtivo()) {
       System.out.println("Não é possível se matricular fora do período de matrícula.");
@@ -65,18 +65,15 @@ public class Aluno extends Usuario {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     for (Disciplina disciplina : disciplinas) {
       if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
-        // Verificar se a disciplina está ativa
         if (disciplina.getStatus() != Status.ATIVA) {
           System.out.println("Disciplina não está ativa.");
           return false;
         }
-        // Verificar se há vagas (mín 3, máx 60)
         int numAlunos = disciplina.getAlunos().size();
         if (numAlunos >= Disciplina.MAX_ALUNOS) {
           System.out.println("Disciplina lotada.");
           return false;
         }
-        // Verificar se o aluno já está matriculado
         List<Matricula> todasMatriculas = SistemaArquivos.carregarMatriculas();
         for (Matricula m : todasMatriculas) {
           if (m.getAluno().getEmail().equalsIgnoreCase(this.getEmail())
@@ -85,7 +82,6 @@ public class Aluno extends Usuario {
             return false;
           }
         }
-        // Verificar limite de disciplinas obrigatórias/optativas
         int obrigatoriasAtual = 0;
         int optativasAtual = 0;
         for (Matricula m : todasMatriculas) {
@@ -105,12 +101,11 @@ public class Aluno extends Usuario {
           System.out.println("Limite de disciplinas optativas atingido.");
           return false;
         }
-        // Realizar matrícula
         Matricula matricula = new Matricula(disciplina, this, LocalDate.now());
         SistemaArquivos.salvarMatricula(matricula);
         this.matriculas.add(matricula);
         disciplina.getAlunos().add(this);
-        // Atualiza persistência da disciplina com nova contagem de alunos
+
         List<Disciplina> todasDisciplinas = SistemaArquivos.carregarDisciplinas();
         for (Disciplina d : todasDisciplinas) {
           if (d.getNome().equalsIgnoreCase(disciplina.getNome())) {
@@ -126,7 +121,7 @@ public class Aluno extends Usuario {
     return false;
   }
 
-  // Método para listar disciplinas disponíveis
+  // lista as disciplinas que tao ativas
   public void listarDisciplinasDisponiveis() {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     System.out.println("\n=== DISCIPLINAS DISPONÍVEIS ===");

@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== SISTEMA DE MATRÍCULA ===");
         
-        // Inicializar dados básicos (opcional - para testes)
+        // deixar isso para os testes na sala
         inicializarDadosBasicos();
         
         int opcao;
@@ -23,7 +23,7 @@ public class Main {
             System.out.print("Escolha uma opção: ");
             
             opcao = scanner.nextInt();
-            scanner.nextLine(); // Consumir quebra de linha
+            scanner.nextLine();
             
             switch (opcao) {
                 case 1:
@@ -56,7 +56,6 @@ public class Main {
         if (usuario != null) {
             System.out.println("Login realizado com sucesso!");
             
-            // Redirecionar para interface específica baseada no tipo do usuário
             if (usuario instanceof Aluno) {
                 InterfaceAluno interfaceAluno = new InterfaceAluno((Aluno) usuario);
                 interfaceAluno.exibirMenu();
@@ -87,7 +86,7 @@ public class Main {
         System.out.print("Escolha: ");
         
         int tipoOpcao = scanner.nextInt();
-        scanner.nextLine(); // Consumir quebra de linha
+        scanner.nextLine();
         
         String tipoUsuario = "";
         switch (tipoOpcao) {
@@ -113,14 +112,12 @@ public class Main {
         }
     }
     
-    // Método para inicializar dados básicos para teste
+    //deixar isso para os testes na sala
     private static void inicializarDadosBasicos() {
-        // Criar uma secretária padrão se não existir
         if (SistemaArquivos.carregarSecretarias().isEmpty()) {
             SistemaAutenticacao.cadastrarUsuario("admin@escola.com", "123456", "secretaria");
         }
         
-        // Criar algumas disciplinas básicas se não existirem
         if (SistemaArquivos.carregarDisciplinas().isEmpty()) {
             Secretaria adminTemp = new Secretaria("temp", "temp");
             adminTemp.cadastrarDisciplina("Programação Orientada a Objetos", 60, true);

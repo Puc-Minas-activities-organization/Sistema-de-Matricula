@@ -19,24 +19,20 @@ public class Professor extends Usuario {
         this.disciplinas = disciplinas;
     }
 
-    // Método para consultar alunos de uma disciplina que o professor leciona
+    //consulta os alunos somente das disciplina que ele leciona
     public void consultarAlunosDisciplina(String nomeDisciplina) {
         boolean encontrou = false;
         
-        // Verificar se o professor leciona esta disciplina
         for (Disciplina disciplina : this.disciplinas) {
             if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
                 encontrou = true;
                 break;
             }
-        }
-        
+        }    
         if (!encontrou) {
             System.out.println("Você não leciona esta disciplina.");
             return;
         }
-        
-        // Buscar disciplina no arquivo
         List<Disciplina> todasDisciplinas = SistemaArquivos.carregarDisciplinas();
         Disciplina disciplinaEncontrada = null;
         
@@ -52,7 +48,6 @@ public class Professor extends Usuario {
             return;
         }
         
-        // Buscar matrículas da disciplina
         List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
         System.out.println("\n=== ALUNOS DA DISCIPLINA: " + nomeDisciplina.toUpperCase() + " ===");
         
@@ -71,7 +66,7 @@ public class Professor extends Usuario {
         }
     }
     
-    // Método para listar disciplinas que o professor leciona
+    // listar disciplinas que o professor leciona(interface dele)
     public void listarMinhasDisciplinas() {
         System.out.println("\n=== DISCIPLINAS QUE VOCÊ LECIONA ===");
         
@@ -90,11 +85,9 @@ public class Professor extends Usuario {
         }
     }
     
-    // Método para verificar se uma disciplina tem o mínimo de alunos
     public void verificarStatusDisciplina(String nomeDisciplina) {
         boolean encontrou = false;
-        
-        // Verificar se o professor leciona esta disciplina
+
         for (Disciplina disciplina : this.disciplinas) {
             if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
                 encontrou = true;
@@ -107,7 +100,6 @@ public class Professor extends Usuario {
             return;
         }
         
-        // Contar matrículas
         List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
         int contador = 0;
         
