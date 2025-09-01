@@ -310,8 +310,31 @@ public class Secretaria extends Usuario {
       System.out.println("Professor não encontrado.");
       return false;
     }
+    // Atualiza objeto disciplina
     disciplina.setProfessor(professor);
+    // Garante que a lista de disciplinas do professor em memória seja atualizada
+    if (professor.getDisciplinas() == null) {
+      professor.setDisciplinas(new java.util.ArrayList<>());
+    }
+    boolean jaExiste = false;
+    for (Disciplina dProf : professor.getDisciplinas()) {
+      if (dProf.getNome().equalsIgnoreCase(disciplina.getNome())) {
+        jaExiste = true;
+        break;
+      }
+    }
+    if (!jaExiste) {
+      professor.getDisciplinas().add(disciplina);
+    }
     SistemaArquivos.reescreverDisciplinas(disciplinas);
+    // Atualiza disciplinas do professor no arquivo de usuários
+    List<String> nomesDisciplinas = new ArrayList<>();
+    for (Disciplina d : disciplinas) {
+      if (d.getProfessor() != null && d.getProfessor().getEmail().equalsIgnoreCase(emailProfessor)) {
+        nomesDisciplinas.add(d.getNome());
+      }
+    }
+    SistemaArquivos.atualizarDisciplinasDoProfessor(emailProfessor, nomesDisciplinas);
     System.out.println("Professor vinculado à disciplina com sucesso!");
     return true;
   }
@@ -329,8 +352,23 @@ public class Secretaria extends Usuario {
       System.out.println("Disciplina não encontrada.");
       return false;
     }
+    Professor professorAnterior = disciplina.getProfessor();
     disciplina.setProfessor(null);
     SistemaArquivos.reescreverDisciplinas(disciplinas);
+    if (professorAnterior != null) {
+      // Remove da lista em memória
+      if (professorAnterior.getDisciplinas() != null) {
+        professorAnterior.getDisciplinas().removeIf(d -> d.getNome().equalsIgnoreCase(nomeDisciplina));
+      }
+      // Recalcula lista restante para persistir
+      List<String> nomesRestantes = new ArrayList<>();
+      for (Disciplina d : disciplinas) {
+        if (d.getProfessor() != null && d.getProfessor().getEmail().equalsIgnoreCase(professorAnterior.getEmail())) {
+          nomesRestantes.add(d.getNome());
+        }
+      }
+      SistemaArquivos.atualizarDisciplinasDoProfessor(professorAnterior.getEmail(), nomesRestantes);
+    }
     System.out.println("Professor desvinculado da disciplina com sucesso!");
     return true;
   }

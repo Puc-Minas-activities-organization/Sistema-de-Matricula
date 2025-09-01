@@ -128,23 +128,29 @@ public class SistemaArquivos {
         if (dados.length >= 3 && "PROFESSOR".equals(dados[0])) {
           String email = dados[1];
           String senha = dados[2];
-          List<Disciplina> disciplinas = new ArrayList<>();
-          if (dados.length > 3 && !dados[3].isEmpty()) {
-            String[] nomesDisciplinas = dados[3].split(",");
-            for (String nome : nomesDisciplinas) {
-              if (!nome.trim().isEmpty()) {
-                Disciplina disciplina = buscarDisciplinaPorNome(nome.trim());
-                if (disciplina != null) {
-                  disciplinas.add(disciplina);
-                }
-              }
-            }
-          }
-          Professor professor = new Professor(disciplinas, email, senha);
+          Professor professor = new Professor(new ArrayList<>(), email, senha);
           professores.add(professor);
         }
       }
     } catch (IOException e) {
+    }
+    // Após carregar professores, sincronizar com disciplinas para popular suas listas
+    List<Disciplina> disciplinas = carregarDisciplinas();
+    for (Disciplina d : disciplinas) {
+      if (d.getProfessor() != null) {
+        Professor prof = null;
+        for (Professor p : professores) {
+          if (p.getEmail().equalsIgnoreCase(d.getProfessor().getEmail())) { prof = p; break; }
+        }
+        if (prof != null) {
+          d.setProfessor(prof); // garantir mesma instância
+          boolean existe = false;
+          for (Disciplina dp : prof.getDisciplinas()) {
+            if (dp.getNome().equalsIgnoreCase(d.getNome())) { existe = true; break; }
+          }
+            if (!existe) prof.getDisciplinas().add(d);
+        }
+      }
     }
     return professores;
   }
@@ -180,22 +186,64 @@ public class SistemaArquivos {
           Status status = Status.valueOf(dados[3]);
           List<Aluno> alunos = new ArrayList<>();
           Disciplina disciplina = new Disciplina(cargaHoraria, nome, obrigatoria, alunos, status);
+          // professor será associado após carregarmos todos para evitar recursão/duplicação
           if (dados.length >= 6 && !dados[5].isEmpty()) {
-            String emailProfessor = dados[5];
-            List<Professor> professores = carregarProfessores();
-            for (Professor prof : professores) {
-              if (prof.getEmail().equalsIgnoreCase(emailProfessor)) {
-                disciplina.setProfessor(prof);
-                break;
-              }
-            }
+            // Temporariamente armazenamos o email dentro do nome usando marcador (hack leve)
+            // Depois resolveremos em sincronizarProfessoresComDisciplinas
+            disciplina.setProfessor(new Professor(new ArrayList<>(), dados[5], "__SYNC_PLACEHOLDER__"));
           }
           disciplinas.add(disciplina);
         }
       }
     } catch (IOException e) {
     }
+    sincronizarProfessoresComDisciplinas(disciplinas);
     return disciplinas;
+  }
+
+  private static void sincronizarProfessoresComDisciplinas(List<Disciplina> disciplinas) {
+    List<Professor> professores = carregarProfessoresSemDisciplinas();
+    for (Disciplina d : disciplinas) {
+      if (d.getProfessor() != null && "__SYNC_PLACEHOLDER__".equals(d.getProfessor().getSenha())) {
+        String email = d.getProfessor().getEmail();
+        Professor real = null;
+        for (Professor p : professores) {
+          if (p.getEmail().equalsIgnoreCase(email)) {
+            real = p;
+            break;
+          }
+        }
+        if (real != null) {
+          d.setProfessor(real);
+          if (real.getDisciplinas() == null) real.setDisciplinas(new ArrayList<>());
+          boolean existe = false;
+          for (Disciplina dp : real.getDisciplinas()) {
+            if (dp.getNome().equalsIgnoreCase(d.getNome())) { existe = true; break; }
+          }
+          if (!existe) real.getDisciplinas().add(d);
+        } else {
+          d.setProfessor(null); // professor não existe mais
+        }
+      }
+    }
+  }
+
+  // Carrega professores sem montar lista de disciplinas (usado para sincronização interna)
+  private static List<Professor> carregarProfessoresSemDisciplinas() {
+    List<Professor> professores = new ArrayList<>();
+    try (BufferedReader reader = new BufferedReader(new FileReader(ARQUIVO_USUARIOS))) {
+      String linha;
+      while ((linha = reader.readLine()) != null) {
+        String[] dados = linha.split(";");
+        if (dados.length >= 3 && "PROFESSOR".equals(dados[0])) {
+          String email = dados[1];
+          String senha = dados[2];
+          professores.add(new Professor(new ArrayList<>(), email, senha));
+        }
+      }
+    } catch (IOException e) {
+    }
+    return professores;
   }
 
   public static List<Matricula> carregarMatriculas() {
@@ -318,6 +366,34 @@ public class SistemaArquivos {
     usuarios.addAll(carregarSecretarias());
     return usuarios;
   }
+
+    // Atualiza as disciplinas lecionadas pelo professor no arquivo de usuários
+    public static void atualizarDisciplinasDoProfessor(String emailProfessor, List<String> nomesDisciplinas) {
+      List<String> linhas = new ArrayList<>();
+      try (BufferedReader reader = new BufferedReader(new FileReader(ARQUIVO_USUARIOS))) {
+        String linha;
+        while ((linha = reader.readLine()) != null) {
+          String[] dados = linha.split(";");
+          if (dados.length >= 3 && "PROFESSOR".equals(dados[0]) && dados[1].equalsIgnoreCase(emailProfessor)) {
+            // Atualiza a lista de disciplinas
+            String disciplinasStr = String.join(",", nomesDisciplinas);
+            linhas.add("PROFESSOR;" + dados[1] + ";" + dados[2] + ";" + disciplinasStr);
+          } else {
+            linhas.add(linha);
+          }
+        }
+      } catch (IOException e) {
+        System.err.println("Erro ao ler usuários: " + e.getMessage());
+      }
+      // Reescreve o arquivo
+      try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_USUARIOS))) {
+        for (String l : linhas) {
+          writer.println(l);
+        }
+      } catch (IOException e) {
+        System.err.println("Erro ao atualizar disciplinas do professor: " + e.getMessage());
+      }
+    }
 
   // deixar para testar na sala (limpa todos os dados)
   public static void limparTodosDados() {
