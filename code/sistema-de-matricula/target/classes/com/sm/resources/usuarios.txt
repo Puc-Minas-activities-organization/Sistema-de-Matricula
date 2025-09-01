@@ -1,3 +1,0 @@
-SECRETARIA;admin@escola.com;123456;
-ALUNO;email@gmail.com;senha123;
-PROFESSOR;prof@gmail.com;12345;
