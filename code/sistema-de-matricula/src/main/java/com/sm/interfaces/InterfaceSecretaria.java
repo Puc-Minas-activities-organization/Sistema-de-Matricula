@@ -1,8 +1,8 @@
 package com.sm.interfaces;
 
 import com.sm.Secretaria;
-
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,63 +18,75 @@ public class InterfaceSecretaria {
   public void exibirMenu() {
     int opcao;
 
-    do {
+ do {
       System.out.println("\n=== MENU DA SECRETARIA ===");
       System.out.println("Bem-vindo, " + secretaria.getEmail());
-      System.out.println("1. Gerar currículo de curso");
-      System.out.println("2. Listar cursos disponíveis");
-      System.out.println("3. Cadastrar nova disciplina");
-      System.out.println("4. Remover disciplina");
-      System.out.println("5. Matricular aluno em disciplina");
-      System.out.println("6. Listar todas as disciplinas");
-      System.out.println("7. Cancelar disciplina");
-      System.out.println("8. Gerar relatório de matrículas");
-      System.out.println("9. Iniciar período de matrícula");
-      System.out.println("10. Finalizar período de matrícula");
-      System.out.println("11. Vincular professor a disciplina");
-      System.out.println("12. Desvincular professor de disciplina");
+      System.out.println("1. Listar cursos disponíveis");
+      System.out.println("2. Criar novo curso");
+      System.out.println("3. Remover curso");
+      System.out.println("4. Gerar currículo de curso");
+      System.out.println("5. Cadastrar nova disciplina");
+      System.out.println("6. Remover disciplina");
+      System.out.println("7. Vincular disciplina a curso");
+      System.out.println("8. Listar todas as disciplinas");
+      System.out.println("9. Cancelar disciplina");
+      System.out.println("10. Vincular professor a disciplina");
+      System.out.println("11. Desvincular professor de disciplina");
+      System.out.println("12. Matricular aluno em disciplina");
+      System.out.println("13. Gerar relatório de matrículas");
+      System.out.println("14. Iniciar período de matrícula");
+      System.out.println("15. Finalizar período de matrícula");
       System.out.println("0. Sair");
       System.out.print("Escolha uma opção: ");
 
       opcao = scanner.nextInt();
-      scanner.nextLine(); // Consumir quebra de linha
+      scanner.nextLine();
 
       switch (opcao) {
         case 1:
-          gerarCurriculo();
-          break;
-        case 2:
           listarCursos();
           break;
+        case 2:
+          criarCurso();
+          break;
         case 3:
-          cadastrarDisciplina();
+          removerCurso();
           break;
         case 4:
-          removerDisciplina();
+          gerarCurriculo();
           break;
         case 5:
-          matricularAluno();
+          cadastrarDisciplina();
           break;
         case 6:
-          secretaria.listarTodasDisciplinas();
+          removerDisciplina();
           break;
         case 7:
-          cancelarDisciplina();
+          vincularDisciplinaACurso();
           break;
         case 8:
-          secretaria.gerarRelatorioMatriculas();
+          secretaria.listarTodasDisciplinas();
           break;
         case 9:
-          secretaria.iniciarPeriodoMatricula();
+          cancelarDisciplina();
           break;
         case 10:
-          secretaria.finalizarPeriodoMatricula();
-          break;
-        case 11:
           vincularProfessorADisciplina();
           break;
-        case 12:
+        case 11:
           desvincularProfessorDeDisciplina();
+          break;
+        case 12:
+          matricularAluno();
+          break;
+        case 13:
+          secretaria.gerarRelatorioMatriculas();
+          break;
+        case 14:
+          secretaria.iniciarPeriodoMatricula();
+          break;
+        case 15:
+          secretaria.finalizarPeriodoMatricula();
           break;
         case 0:
           System.out.println("Saindo...");
@@ -83,6 +95,46 @@ public class InterfaceSecretaria {
           System.out.println("Opção inválida!");
       }
     } while (opcao != 0);
+  }
+
+  private void vincularDisciplinaACurso() {
+    System.out.print("Digite o nome do curso: ");
+    String nomeCurso = scanner.nextLine();
+    System.out.print("Digite o nome da disciplina: ");
+    String nomeDisciplina = scanner.nextLine();
+    System.out.print("A disciplina é obrigatória? (true/false): ");
+    boolean obrigatoria = Boolean.parseBoolean(scanner.nextLine());
+    boolean sucesso =
+        secretaria.vincularDisciplinaACurso(nomeCurso.trim(), nomeDisciplina.trim(), obrigatoria);
+    if (!sucesso) {
+      System.out.println("Falha ao vincular disciplina ao curso.");
+    }
+  }
+
+  private void criarCurso() {
+    System.out.print("Digite o nome do curso: ");
+    String nome = scanner.nextLine();
+    System.out.print("Digite o número de créditos: ");
+    int creditos;
+    try {
+      creditos = Integer.parseInt(scanner.nextLine());
+    } catch (NumberFormatException e) {
+      System.out.println("Créditos inválidos.");
+      return;
+    }
+    boolean sucesso = secretaria.criarCurso(nome.trim(), creditos, new ArrayList<>(), new ArrayList<>());
+    if (!sucesso) {
+      System.out.println("Falha ao criar curso.");
+    }
+  }
+
+  private void removerCurso() {
+    System.out.print("Digite o nome do curso a ser removido: ");
+    String nome = scanner.nextLine();
+    boolean sucesso = secretaria.removerCurso(nome.trim());
+    if (!sucesso) {
+      System.out.println("Falha ao remover curso.");
+    }
   }
 
   private void gerarCurriculo() {
@@ -99,7 +151,7 @@ public class InterfaceSecretaria {
     System.out.print("Digite a carga horária: ");
     String cargaHorariaStr = scanner.nextLine();
     double cargaHoraria;
-    
+
     try {
       cargaHoraria = Double.parseDouble(cargaHorariaStr.replace(",", "."));
     } catch (NumberFormatException e) {
@@ -157,12 +209,12 @@ public class InterfaceSecretaria {
   private void listarCursos() {
     List<com.sm.Curso> cursos = com.sm.SistemaArquivos.carregarCursos();
     System.out.println("\n=== CURSOS DISPONÍVEIS ===");
-    
+
     if (cursos.isEmpty()) {
       System.out.println("Nenhum curso cadastrado.");
       return;
     }
-    
+
     for (com.sm.Curso curso : cursos) {
       System.out.println("Nome: " + curso.getNome());
       System.out.println("Créditos: " + curso.getCreditos());
@@ -172,12 +224,13 @@ public class InterfaceSecretaria {
     }
   }
 
-    private String normalizarTexto(String texto) { // muito feio 
+  private String normalizarTexto(String texto) { // muito feio
     if (texto == null) {
-        return null;
+      return null;
     }
-    
-    return texto.toLowerCase()
+
+    return texto
+        .toLowerCase()
         .replace("ã", "a")
         .replace("á", "a")
         .replace("à", "a")
@@ -202,5 +255,5 @@ public class InterfaceSecretaria {
         .replace("ü", "u")
         .replace("ç", "c")
         .trim();
-}
+  }
 }

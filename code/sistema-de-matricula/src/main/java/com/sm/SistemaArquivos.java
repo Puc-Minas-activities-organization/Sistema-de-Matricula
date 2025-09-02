@@ -6,7 +6,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SistemaArquivos {
-//reescreve todas as matrículas
+
+  public static boolean atualizarDisciplinasDoCurso(
+      String nomeCurso, List<String> obrigatorias, List<String> optativas) {
+    List<Curso> cursos = carregarCursos();
+    boolean encontrado = false;
+    for (Curso curso : cursos) {
+      if (curso.getNome().equalsIgnoreCase(nomeCurso)) {
+        curso.setDisciplinasObrigatorias(obrigatorias);
+        curso.setDisciplinasOptativas(optativas);
+        encontrado = true;
+        break;
+      }
+    }
+    if (!encontrado) return false;
+    try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_CURSOS))) {
+      for (Curso curso : cursos) {
+        writer.println(
+            curso.getNome()
+                + ";"
+                + curso.getCreditos()
+                + ";"
+                + String.join(",", curso.getDisciplinasObrigatorias())
+                + ";"
+                + String.join(",", curso.getDisciplinasOptativas()));
+      }
+    } catch (IOException e) {
+      System.err.println("Erro ao atualizar curso: " + e.getMessage());
+      return false;
+    }
+    return true;
+  }
+
+  // reescreve todas as matrículas
   public static void reescreverMatriculas(List<Matricula> matriculas) {
     try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_MATRICULAS))) {
       for (Matricula m : matriculas) {
@@ -140,15 +172,21 @@ public class SistemaArquivos {
       if (d.getProfessor() != null) {
         Professor prof = null;
         for (Professor p : professores) {
-          if (p.getEmail().equalsIgnoreCase(d.getProfessor().getEmail())) { prof = p; break; }
+          if (p.getEmail().equalsIgnoreCase(d.getProfessor().getEmail())) {
+            prof = p;
+            break;
+          }
         }
         if (prof != null) {
           d.setProfessor(prof); // garantir mesma instância
           boolean existe = false;
           for (Disciplina dp : prof.getDisciplinas()) {
-            if (dp.getNome().equalsIgnoreCase(d.getNome())) { existe = true; break; }
+            if (dp.getNome().equalsIgnoreCase(d.getNome())) {
+              existe = true;
+              break;
+            }
           }
-            if (!existe) prof.getDisciplinas().add(d);
+          if (!existe) prof.getDisciplinas().add(d);
         }
       }
     }
@@ -190,7 +228,8 @@ public class SistemaArquivos {
           if (dados.length >= 6 && !dados[5].isEmpty()) {
             // Temporariamente armazenamos o email dentro do nome usando marcador (hack leve)
             // Depois resolveremos em sincronizarProfessoresComDisciplinas
-            disciplina.setProfessor(new Professor(new ArrayList<>(), dados[5], "__SYNC_PLACEHOLDER__"));
+            disciplina.setProfessor(
+                new Professor(new ArrayList<>(), dados[5], "__SYNC_PLACEHOLDER__"));
           }
           disciplinas.add(disciplina);
         }
@@ -218,7 +257,10 @@ public class SistemaArquivos {
           if (real.getDisciplinas() == null) real.setDisciplinas(new ArrayList<>());
           boolean existe = false;
           for (Disciplina dp : real.getDisciplinas()) {
-            if (dp.getNome().equalsIgnoreCase(d.getNome())) { existe = true; break; }
+            if (dp.getNome().equalsIgnoreCase(d.getNome())) {
+              existe = true;
+              break;
+            }
           }
           if (!existe) real.getDisciplinas().add(d);
         } else {
@@ -367,33 +409,33 @@ public class SistemaArquivos {
     return usuarios;
   }
 
-    // Atualiza as disciplinas lecionadas pelo professor no arquivo de usuários
-    public static void atualizarDisciplinasDoProfessor(String emailProfessor, List<String> nomesDisciplinas) {
-      List<String> linhas = new ArrayList<>();
-      try (BufferedReader reader = new BufferedReader(new FileReader(ARQUIVO_USUARIOS))) {
-        String linha;
-        while ((linha = reader.readLine()) != null) {
-          String[] dados = linha.split(";");
-          if (dados.length >= 3 && "PROFESSOR".equals(dados[0]) && dados[1].equalsIgnoreCase(emailProfessor)) {
-            // Atualiza a lista de disciplinas
-            String disciplinasStr = String.join(",", nomesDisciplinas);
-            linhas.add("PROFESSOR;" + dados[1] + ";" + dados[2] + ";" + disciplinasStr);
-          } else {
-            linhas.add(linha);
-          }
+  public static void atualizarDisciplinasDoProfessor(
+      String emailProfessor, List<String> nomesDisciplinas) {
+    List<String> linhas = new ArrayList<>();
+    try (BufferedReader reader = new BufferedReader(new FileReader(ARQUIVO_USUARIOS))) {
+      String linha;
+      while ((linha = reader.readLine()) != null) {
+        String[] dados = linha.split(";");
+        if (dados.length >= 3
+            && "PROFESSOR".equals(dados[0])
+            && dados[1].equalsIgnoreCase(emailProfessor)) {
+          String disciplinasStr = String.join(",", nomesDisciplinas);
+          linhas.add("PROFESSOR;" + dados[1] + ";" + dados[2] + ";" + disciplinasStr);
+        } else {
+          linhas.add(linha);
         }
-      } catch (IOException e) {
-        System.err.println("Erro ao ler usuários: " + e.getMessage());
       }
-      // Reescreve o arquivo
-      try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_USUARIOS))) {
-        for (String l : linhas) {
-          writer.println(l);
-        }
-      } catch (IOException e) {
-        System.err.println("Erro ao atualizar disciplinas do professor: " + e.getMessage());
-      }
+    } catch (IOException e) {
+      System.err.println("Erro ao ler usuários: " + e.getMessage());
     }
+    try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_USUARIOS))) {
+      for (String l : linhas) {
+        writer.println(l);
+      }
+    } catch (IOException e) {
+      System.err.println("Erro ao atualizar disciplinas do professor: " + e.getMessage());
+    }
+  }
 
   // deixar para testar na sala (limpa todos os dados)
   public static void limparTodosDados() {
@@ -410,9 +452,14 @@ public class SistemaArquivos {
 
   public static void salvarCurso(Curso curso) {
     try (PrintWriter writer = new PrintWriter(new FileWriter(ARQUIVO_CURSOS, true))) {
-      writer.println(curso.getNome() + ";" + curso.getCreditos() + ";"
-          + String.join(",", curso.getDisciplinasObrigatorias()) + ";"
-          + String.join(",", curso.getDisciplinasOptativas()));
+      writer.println(
+          curso.getNome()
+              + ";"
+              + curso.getCreditos()
+              + ";"
+              + String.join(",", curso.getDisciplinasObrigatorias())
+              + ";"
+              + String.join(",", curso.getDisciplinasOptativas()));
     } catch (IOException e) {
       System.err.println("Erro ao salvar curso: " + e.getMessage());
     }
@@ -423,33 +470,30 @@ public class SistemaArquivos {
     try (BufferedReader reader = new BufferedReader(new FileReader(ARQUIVO_CURSOS))) {
       String linha;
       while ((linha = reader.readLine()) != null) {
+        if (linha.trim().isEmpty()) continue;
         String[] dados = linha.split(";");
-        if (dados.length >= 4) {
-          String nome = dados[0];
-          int creditos = Integer.parseInt(dados[1]);
-          List<String> disciplinasObrigatorias = new ArrayList<>();
-          List<String> disciplinasOptativas = new ArrayList<>();
-          
-          if (!dados[2].isEmpty()) {
-            String[] obrigatorias = dados[2].split(",");
-            for (String disciplina : obrigatorias) {
-              if (!disciplina.trim().isEmpty()) {
-                disciplinasObrigatorias.add(disciplina.trim());
-              }
+        if (dados.length < 2) continue; 
+        String nome = dados[0].trim();
+        int creditos = Integer.parseInt(dados[1].trim());
+        List<String> disciplinasObrigatorias = new ArrayList<>();
+        List<String> disciplinasOptativas = new ArrayList<>();
+        if (dados.length > 2 && !dados[2].trim().isEmpty()) {
+          String[] obrigatorias = dados[2].split(",");
+          for (String disciplina : obrigatorias) {
+            if (!disciplina.trim().isEmpty()) {
+              disciplinasObrigatorias.add(disciplina.trim());
             }
           }
-          
-          if (!dados[3].isEmpty()) {
-            String[] optativas = dados[3].split(",");
-            for (String disciplina : optativas) {
-              if (!disciplina.trim().isEmpty()) {
-                disciplinasOptativas.add(disciplina.trim());
-              }
-            }
-          }
-          
-          cursos.add(new Curso(disciplinasObrigatorias, disciplinasOptativas, nome, creditos));
         }
+        if (dados.length > 3 && !dados[3].trim().isEmpty()) {
+          String[] optativas = dados[3].split(",");
+          for (String disciplina : optativas) {
+            if (!disciplina.trim().isEmpty()) {
+              disciplinasOptativas.add(disciplina.trim());
+            }
+          }
+        }
+        cursos.add(new Curso(disciplinasObrigatorias, disciplinasOptativas, nome, creditos));
       }
     } catch (IOException e) {
     }
@@ -474,27 +518,29 @@ public class SistemaArquivos {
       disciplinasEngSoftware.add("Engenharia de Software");
       disciplinasEngSoftware.add("Banco de Dados");
       disciplinasEngSoftware.add("Programação Orientada a Objetos");
-      
+
       List<String> optativasEngSoftware = new ArrayList<>();
       optativasEngSoftware.add("Inteligência Artificial");
       optativasEngSoftware.add("Desenvolvimento Web");
-      
-      Curso engenhariaSoftware = new Curso(disciplinasEngSoftware, optativasEngSoftware, "Engenharia de Software", 240);
+
+      Curso engenhariaSoftware =
+          new Curso(disciplinasEngSoftware, optativasEngSoftware, "Engenharia de Software", 240);
       salvarCurso(engenhariaSoftware);
-      
+
       List<String> disciplinasCiencia = new ArrayList<>();
       disciplinasCiencia.add("Cálculo I");
       disciplinasCiencia.add("Programação I");
       disciplinasCiencia.add("Estruturas Discretas");
       disciplinasCiencia.add("Sistemas Operacionais");
-      
+
       List<String> optativasCiencia = new ArrayList<>();
       optativasCiencia.add("Redes de Computadores");
       optativasCiencia.add("Computação Gráfica");
-      
-      Curso cienciaComputacao = new Curso(disciplinasCiencia, optativasCiencia, "Ciencia da Computacao", 240);
+
+      Curso cienciaComputacao =
+          new Curso(disciplinasCiencia, optativasCiencia, "Ciencia da Computacao", 240);
       salvarCurso(cienciaComputacao);
-      
+
       System.out.println("Cursos padrão inicializados com sucesso!");
     }
   }

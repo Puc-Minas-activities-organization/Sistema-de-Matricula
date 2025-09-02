@@ -1,56 +1,90 @@
 package com.sm;
 
-import com.sm.services.BuscaService;
-import com.sm.services.MatriculaValidationService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Secretaria extends Usuario {
+
+  public boolean vincularDisciplinaACurso(
+      String nomeCurso, String nomeDisciplina, boolean obrigatoria) {
+    Curso curso = SistemaArquivos.buscarCursoPorNome(nomeCurso);
+    if (curso == null) {
+      System.out.println("Curso não encontrado.");
+      return false;
+    }
+    List<String> obrigatorias = new ArrayList<>(curso.getDisciplinasObrigatorias());
+    List<String> optativas = new ArrayList<>(curso.getDisciplinasOptativas());
+    if (obrigatoria) {
+      if (obrigatorias.contains(nomeDisciplina)) {
+        System.out.println("Disciplina já está como obrigatória no curso.");
+        return false;
+      }
+      obrigatorias.add(nomeDisciplina);
+    } else {
+      if (optativas.contains(nomeDisciplina)) {
+        System.out.println("Disciplina já está como optativa no curso.");
+        return false;
+      }
+      optativas.add(nomeDisciplina);
+    }
+    boolean sucesso =
+        SistemaArquivos.atualizarDisciplinasDoCurso(nomeCurso, obrigatorias, optativas);
+    if (sucesso) {
+      System.out.println("Disciplina vinculada ao curso com sucesso!");
+    } else {
+      System.out.println("Falha ao vincular disciplina ao curso.");
+    }
+    return sucesso;
+  }
+
   private static boolean periodoMatriculaAtivo = false;
 
   public Secretaria(String email, String senha) {
     super(email, senha);
   }
 
-  // 
+  //
   public void gerarCurriculo(String nomeCurso) {
     Curso curso = SistemaArquivos.buscarCursoPorNome(nomeCurso);
-    
+
     if (curso == null) {
       System.out.println("Curso não encontrado: " + nomeCurso);
       return;
     }
-    
+
     System.out.println("\n=== CURRÍCULO DO CURSO: " + nomeCurso.toUpperCase() + " ===");
     System.out.println("Créditos necessários: " + curso.getCreditos());
-    
+
     double totalCargaHoraria = 0;
     List<Disciplina> todasDisciplinas = SistemaArquivos.carregarDisciplinas();
-    
+
     System.out.println("\nDisciplinas Obrigatórias:");
     for (String nomeDisciplina : curso.getDisciplinasObrigatorias()) {
       for (Disciplina disciplina : todasDisciplinas) {
         if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
-          System.out.println("- " + disciplina.getNome() + " (" + disciplina.getCargaHoraria() + "h)");
+          System.out.println(
+              "- " + disciplina.getNome() + " (" + disciplina.getCargaHoraria() + "h)");
           totalCargaHoraria += disciplina.getCargaHoraria();
           break;
         }
       }
     }
-    
+
     System.out.println("\nDisciplinas Optativas:");
     for (String nomeDisciplina : curso.getDisciplinasOptativas()) {
       for (Disciplina disciplina : todasDisciplinas) {
         if (disciplina.getNome().equalsIgnoreCase(nomeDisciplina)) {
-          System.out.println("- " + disciplina.getNome() + " (" + disciplina.getCargaHoraria() + "h)");
+          System.out.println(
+              "- " + disciplina.getNome() + " (" + disciplina.getCargaHoraria() + "h)");
           break;
         }
       }
     }
-    
+
     System.out.println("\n=== RESUMO ===");
-    System.out.println("Total de disciplinas obrigatórias: " + curso.getDisciplinasObrigatorias().size());
+    System.out.println(
+        "Total de disciplinas obrigatórias: " + curso.getDisciplinasObrigatorias().size());
     System.out.println("Total de disciplinas optativas: " + curso.getDisciplinasOptativas().size());
     System.out.println("Carga horária total das obrigatórias: " + totalCargaHoraria + "h");
   }
@@ -72,6 +106,58 @@ public class Secretaria extends Usuario {
 
   public static boolean isPeriodoMatriculaAtivo() {
     return periodoMatriculaAtivo;
+  }
+
+  public boolean criarCurso(
+      String nome, int creditos, List<String> obrigatorias, List<String> optativas) {
+    if (nome == null || nome.isEmpty() || creditos <= 0) {
+      System.out.println("Dados inválidos para criar curso.");
+      return false;
+    }
+    if (SistemaArquivos.buscarCursoPorNome(nome) != null) {
+      System.out.println("Já existe um curso com esse nome.");
+      return false;
+    }
+    Curso novoCurso = new Curso(new ArrayList<>(), new ArrayList<>(), nome, creditos);
+    SistemaArquivos.salvarCurso(novoCurso);
+    System.out.println("Curso criado com sucesso!");
+    return true;
+  }
+
+  public boolean removerCurso(String nome) {
+    if (nome == null || nome.isEmpty()) {
+      System.out.println("Nome do curso inválido.");
+      return false;
+    }
+    List<Curso> cursos = SistemaArquivos.carregarCursos();
+    Curso cursoRemover = null;
+    for (Curso c : cursos) {
+      if (c.getNome().equalsIgnoreCase(nome)) {
+        cursoRemover = c;
+        break;
+      }
+    }
+    if (cursoRemover == null) {
+      System.out.println("Curso não encontrado.");
+      return false;
+    }
+    cursos.remove(cursoRemover);
+    try (java.io.PrintWriter writer =
+        new java.io.PrintWriter(
+            new java.io.FileWriter(
+                "code/sistema-de-matricula/src/main/java/com/sm/resources/cursos.txt"))) {
+      for (Curso curso : cursos) {
+        String obrigatorias = String.join(",", curso.getDisciplinasObrigatorias());
+        String optativas = String.join(",", curso.getDisciplinasOptativas());
+        writer.println(
+            curso.getNome() + ";" + curso.getCreditos() + ";" + obrigatorias + ";" + optativas);
+      }
+    } catch (java.io.IOException e) {
+      System.out.println("Erro ao remover curso: " + e.getMessage());
+      return false;
+    }
+    System.out.println("Curso removido com sucesso!");
+    return true;
   }
 
   private void cancelarDisciplinasComPoucosAlunos() {
@@ -119,7 +205,6 @@ public class Secretaria extends Usuario {
   public boolean removerDisciplina(String nome) {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     boolean encontrou = false;
-
 
     List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
     for (Matricula matricula : matriculas) {
@@ -219,6 +304,7 @@ public class Secretaria extends Usuario {
       return;
     }
 
+    List<Curso> cursos = SistemaArquivos.carregarCursos();
     for (Disciplina disciplina : disciplinas) {
       int alunosCount = 0;
       for (Matricula matricula : matriculas) {
@@ -226,11 +312,28 @@ public class Secretaria extends Usuario {
           alunosCount++;
         }
       }
+      String cursoAgregado = "(não agregado)";
+      String tipoAgregado = "";
+      for (Curso curso : cursos) {
+        if (curso.getDisciplinasObrigatorias().contains(disciplina.getNome())) {
+          cursoAgregado = curso.getNome();
+          tipoAgregado = "Obrigatória";
+          break;
+        } else if (curso.getDisciplinasOptativas().contains(disciplina.getNome())) {
+          cursoAgregado = curso.getNome();
+          tipoAgregado = "Optativa";
+          break;
+        }
+      }
       System.out.println("Nome: " + disciplina.getNome());
       System.out.println("Carga Horária: " + disciplina.getCargaHoraria());
       System.out.println("Tipo: " + (disciplina.isObrigatoria() ? "Obrigatória" : "Optativa"));
       System.out.println("Status: " + disciplina.getStatus());
       System.out.println("Alunos: " + alunosCount);
+      System.out.println(
+          "Curso agregado: "
+              + cursoAgregado
+              + (tipoAgregado.isEmpty() ? "" : " (" + tipoAgregado + ")"));
       if (disciplina.getProfessor() != null) {
         System.out.println("Professor: " + disciplina.getProfessor().getEmail());
       } else {
@@ -330,7 +433,8 @@ public class Secretaria extends Usuario {
     // Atualiza disciplinas do professor no arquivo de usuários
     List<String> nomesDisciplinas = new ArrayList<>();
     for (Disciplina d : disciplinas) {
-      if (d.getProfessor() != null && d.getProfessor().getEmail().equalsIgnoreCase(emailProfessor)) {
+      if (d.getProfessor() != null
+          && d.getProfessor().getEmail().equalsIgnoreCase(emailProfessor)) {
         nomesDisciplinas.add(d.getNome());
       }
     }
@@ -358,12 +462,15 @@ public class Secretaria extends Usuario {
     if (professorAnterior != null) {
       // Remove da lista em memória
       if (professorAnterior.getDisciplinas() != null) {
-        professorAnterior.getDisciplinas().removeIf(d -> d.getNome().equalsIgnoreCase(nomeDisciplina));
+        professorAnterior
+            .getDisciplinas()
+            .removeIf(d -> d.getNome().equalsIgnoreCase(nomeDisciplina));
       }
       // Recalcula lista restante para persistir
       List<String> nomesRestantes = new ArrayList<>();
       for (Disciplina d : disciplinas) {
-        if (d.getProfessor() != null && d.getProfessor().getEmail().equalsIgnoreCase(professorAnterior.getEmail())) {
+        if (d.getProfessor() != null
+            && d.getProfessor().getEmail().equalsIgnoreCase(professorAnterior.getEmail())) {
           nomesRestantes.add(d.getNome());
         }
       }

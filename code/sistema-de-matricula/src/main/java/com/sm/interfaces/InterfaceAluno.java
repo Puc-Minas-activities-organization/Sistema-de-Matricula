@@ -2,7 +2,6 @@ package com.sm.interfaces;
 
 import com.sm.Aluno;
 import com.sm.Matricula;
-
 import java.util.Scanner;
 
 public class InterfaceAluno {
@@ -28,7 +27,7 @@ public class InterfaceAluno {
       System.out.print("Escolha uma opção: ");
 
       opcao = scanner.nextInt();
-      scanner.nextLine(); // Consumir quebra de linha
+      scanner.nextLine(); 
 
       switch (opcao) {
         case 1:
@@ -56,7 +55,9 @@ public class InterfaceAluno {
     System.out.print("Digite o nome da disciplina: ");
     String nomeDisciplina = scanner.nextLine();
     aluno.matricular(nomeDisciplina);
-    System.out.println("Disciplina: " + nomeDisciplina + " matriculada com sucesso.");
+    if (nomeDisciplina != null && !nomeDisciplina.trim().isEmpty()) {
+      System.out.println("Disciplina: " + nomeDisciplina + " matriculada com sucesso.");
+    }
     Matricula.notificarSistemaCobranca(aluno);
   }
 
@@ -64,7 +65,9 @@ public class InterfaceAluno {
     System.out.print("Digite o nome da disciplina para cancelar matrícula: ");
     String nomeDisciplina = scanner.nextLine();
     aluno.cancelarMatricula(nomeDisciplina);
-    System.out.println("Disciplina: " + nomeDisciplina + " cancelada com sucesso.");
+    if (nomeDisciplina != null && !nomeDisciplina.trim().isEmpty()) {
+      System.out.println("Disciplina: " + nomeDisciplina + " cancelada com sucesso.");
+    }
     Matricula.notificarSistemaCobranca(aluno);
   }
 }

@@ -68,16 +68,28 @@ public class Aluno extends Usuario {
   public void listarDisciplinasDisponiveis() {
     List<Disciplina> disciplinas = SistemaArquivos.carregarDisciplinas();
     List<Matricula> matriculas = SistemaArquivos.carregarMatriculas();
+    List<Curso> cursos = SistemaArquivos.carregarCursos();
     System.out.println("\n=== DISCIPLINAS DISPONÍVEIS ===");
 
     boolean temDisponiveis = false;
     for (Disciplina disciplina : disciplinas) {
       if (disciplina.getStatus() == Status.ATIVA) {
-        int alunosMatriculados = MatriculaValidationService.contarAlunosMatriculados(
-            disciplina.getNome(), matriculas);
-        
+        int alunosMatriculados =
+            MatriculaValidationService.contarAlunosMatriculados(disciplina.getNome(), matriculas);
+
         if (alunosMatriculados < Disciplina.MAX_ALUNOS) {
-          System.out.println("Nome: " + disciplina.getNome());
+          String nomeCursoVinculado = null;
+          for (Curso curso : cursos) {
+            if (curso.getDisciplinasObrigatorias().contains(disciplina.getNome())
+                || curso.getDisciplinasOptativas().contains(disciplina.getNome())) {
+              nomeCursoVinculado = curso.getNome();
+              break;
+            }
+          }
+          System.out.println(
+              "Nome: "
+                  + disciplina.getNome()
+                  + (nomeCursoVinculado != null ? " (Curso: " + nomeCursoVinculado + ")" : ""));
           System.out.println("Carga Horária: " + disciplina.getCargaHoraria());
           System.out.println("Tipo: " + (disciplina.isObrigatoria() ? "Obrigatória" : "Optativa"));
           System.out.println("Vagas disponíveis: " + (Disciplina.MAX_ALUNOS - alunosMatriculados));
@@ -91,7 +103,7 @@ public class Aluno extends Usuario {
         }
       }
     }
-    
+
     if (!temDisponiveis) {
       System.out.println("Não há disciplinas disponíveis no momento.");
     }
@@ -99,14 +111,27 @@ public class Aluno extends Usuario {
 
   public void visualizarMatriculas() {
     List<Matricula> todasMatriculas = SistemaArquivos.carregarMatriculas();
+    List<Curso> cursos = SistemaArquivos.carregarCursos();
     System.out.println("\n=== SUAS MATRÍCULAS ===");
 
     boolean temMatricula = false;
     for (Matricula matricula : todasMatriculas) {
       if (matricula.getAluno().getEmail().equalsIgnoreCase(this.getEmail())) {
-        System.out.println("Disciplina: " + matricula.getDisciplina().getNome());
+        Disciplina disciplina = matricula.getDisciplina();
+        String nomeCursoVinculado = null;
+        for (Curso curso : cursos) {
+          if (curso.getDisciplinasObrigatorias().contains(disciplina.getNome())
+              || curso.getDisciplinasOptativas().contains(disciplina.getNome())) {
+            nomeCursoVinculado = curso.getNome();
+            break;
+          }
+        }
+        System.out.println(
+            "Disciplina: "
+                + disciplina.getNome()
+                + (nomeCursoVinculado != null ? " (Curso: " + nomeCursoVinculado + ")" : ""));
         System.out.println("Data da Matrícula: " + matricula.getDataMatricula());
-        System.out.println("Tipo: " + (matricula.getDisciplina().isObrigatoria() ? "Obrigatória" : "Optativa"));
+        System.out.println("Tipo: " + (disciplina.isObrigatoria() ? "Obrigatória" : "Optativa"));
         System.out.println("------------------------");
         temMatricula = true;
       }
