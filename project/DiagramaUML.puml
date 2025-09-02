@@ -44,6 +44,9 @@ class Secretaria {
   +gerarRelatorioMatriculas(): void
   +vincularProfessorADisciplina(nomeDisciplina: String, emailProfessor: String): boolean
   +desvincularProfessorDeDisciplina(nomeDisciplina: String): boolean
+  +criarCurso(nome: String, creditos: int, obrigatorias: List<String>, optativas: List<String>): boolean
+  +removerCurso(nome: String): boolean
+  +vincularProfessorADisciplina(nomeDisciplina: String, emailProfessor: String): boolean
 }
 
 class Disciplina {
